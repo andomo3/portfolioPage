@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>abba.fm — terminal-first portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<canvas id="markov-canvas" aria-hidden="true"></canvas>
+
+<div class="app">
+
+  <!-- ============== STATUS / NAV BAR ============== -->
+  <header class="statusbar" role="banner">
+    <span><span class="dot"></span></span>
+    <span class="brand">abba<span>.fm</span></span>
+    <span class="meta">~/portfolio</span>
+    <span class="meta">·</span>
+    <span class="meta">branch <b>main</b></span>
+    <span class="meta">·</span>
+    <span class="meta">π = <b>3.14159</b>…</span>
+
+    <nav class="nav" role="navigation">
+      <a data-nav="home" class="active"><span class="key">⌘1</span>home</a>
+      <a data-nav="projects"><span class="key">⌘2</span>projects</a>
+      <a data-nav="about"><span class="key">⌘3</span>about</a>
+      <a data-nav="contact"><span class="key">⌘4</span>contact</a>
+    </nav>
+
+    <span class="meta" id="latency">42ms</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </header>
+
+  <main class="container">
+
+    <!-- ====================================================== -->
+    <!-- HOME                                                   -->
+    <!-- ====================================================== -->
+    <section class="page active" data-page="home" data-screen-label="01 Home">
+
+      <div class="hero">
+
+        <!-- Identity card -->
+        <div class="hero-id">
+          <div>
+            <h1 class="name">abba <span class="accent">ndomo</span><span class="role" style="display:block; font-size: 22px; color:var(--fg-dim); margin-top:6px;">// engineer <span class="blink"></span></span></h1>
+
+            <p class="bio">
+              I'm a problem solver who believes the best solutions start with a conversation, not just a calculation. While my academic foundation is built on the rigor of <b>Math</b> and <b>Computer Science</b>, my drive comes from an entrepreneurial spirit that thrives on thinking on my feet. <em>I view every project like a competitive sport</em>: it requires preparation, agility, and a deep understanding of your teammates.
+            </p>
+
+            <div class="tag-row">
+              <span class="tag solid"><span class="kv-k">role:</span>data analyst</span>
+              <span class="tag"><span class="kv-k">building:</span>boxxer ai</span>
+              <span class="tag"><span class="kv-k">learning:</span>svms · deep learning</span>
+              <span class="tag"><span class="kv-k">loc:</span>atlanta, ga</span>
+            </div>
+          </div>
+
+          <div class="cta-row">
+            <button class="btn primary" onclick="window.__term && window.__term.runCmd('cd projects')"><span class="key" style="background:rgba(0,0,0,0.2); border-color:rgba(255,255,255,0.2);">↵</span>browse projects</button>
+            <button class="btn" onclick="window.__term && window.__term.runCmd('cd contact')"><span class="key">/</span>say hi</button>
+            <button class="btn" onclick="window.__term && window.__term.runCmd('shuffle')"><span class="key">⌥</span>shuffle</button>
+          </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal" id="terminal">
+          <div class="term-titlebar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <div class="title">— <b>abba@portfolio</b> — zsh — 86×24</div>
+            <div class="right">⌘ + K</div>
+          </div>
+          <div class="term-body" id="term-body" aria-live="polite"></div>
+          <div class="term-input-row" id="term-input-row">
+            <span class="prompt"><span class="user">abba</span><span class="at">@</span><span class="host">portfolio</span><span class="sep">:</span><span class="path">~</span><span class="sep">$</span></span>
+            <input id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type a command — try `help`, `play 3`, `shuffle`, `cd projects`" />
+            <span class="hint">↵ run · ↑↓ history</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Featured projects = playlist preview -->
+      <div class="section-label"><span class="num">01</span><span>featured · top of the playlist</span></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="badge">/playlists/featured.m3u</span>
+          <span>3 of 7 tracks</span>
+          <span class="right" id="featured-meta">14:01 total · last updated may '26</span>
+        </div>
+        <div class="playlist" id="home-playlist">
+          <div class="row header">
+            <div></div>
+            <div></div>
+            <div>title</div>
+            <div>album · stack</div>
+            <div>plays</div>
+            <div>dur</div>
+            <div></div>
+          </div>
+          <!-- rows populated by JS -->
+        </div>
+      </div>
+
+      <!-- Experience timeline (kept) -->
+      <div class="section-label"><span class="num">02</span><span>experience · timeline</span></div>
+
+      <div class="timeline">
+        <article class="exp-card">
+          <div class="head">
+            <div class="role">Data Science Intern <span class="at">@ KPMG</span></div>
+            <div class="when">jun 2024 — aug 2024</div>
+          </div>
+          <div class="summary">Built backend services to improve enterprise document retrieval.</div>
+          <ul>
+            <li>Built Python microservices for document ingestion and retrieval.</li>
+            <li>Improved ingestion monitoring with structured logging and alerts.</li>
+            <li>Partnered with QA to validate accuracy improvements.</li>
+          </ul>
+          <div class="stack">
+            <span class="tag">python</span>
+            <span class="tag">ci/cd</span>
+            <span class="tag">microservices</span>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="head">
+            <div class="role">Quantitative Analyst Mentee <span class="at">@ Georgia Tech</span></div>
+            <div class="when">jan 2025 — may 2025</div>
+          </div>
+          <div class="summary">Built an automated equity screener and backtesting workflow.</div>
+          <ul>
+            <li>Automated equity screening in Python with pandas and yfinance.</li>
+            <li>Created reusable factor backtests with clear reporting.</li>
+            <li>Documented workflows for future cohorts.</li>
+          </ul>
+          <div class="stack">
+            <span class="tag">python</span>
+            <span class="tag">pandas</span>
+            <span class="tag">yfinance</span>
+            <span class="tag">jupyter</span>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="head">
+            <div class="role">DEI Committee Chair <span class="at">@ Georgia Tech</span></div>
+            <div class="when">jan 2025 — present</div>
+          </div>
+          <div class="summary">Led programming and coordination for student DEI initiatives.</div>
+          <ul>
+            <li>Designed event architecture and speaker series programming.</li>
+            <li>Coordinated cross-functional volunteers and logistics.</li>
+            <li>Built feedback loops to improve event attendance.</li>
+          </ul>
+          <div class="stack">
+            <span class="tag">leadership</span>
+            <span class="tag">events</span>
+            <span class="tag">programming</span>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="head">
+            <div class="role">Housing Office Assistant <span class="at">@ Georgia Tech</span></div>
+            <div class="when">aug 2024 — present</div>
+          </div>
+          <div class="summary">Supported residents and streamlined housing operations.</div>
+          <ul>
+            <li>Built resident support workflows and FAQs for faster issue resolution.</li>
+            <li>Managed inventory and event logistics for community programming.</li>
+          </ul>
+          <div class="stack">
+            <span class="tag">support</span>
+            <span class="tag">operations</span>
+          </div>
+        </article>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="section-label"><span class="num">03</span><span>commit rhythm · 53 weeks remixed</span></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="badge">~/.git/commits.wav</span>
+          <span>1,284 commits · 312 days active</span>
+          <span class="right">tap a cell to play that day's loop</span>
+        </div>
+        <div class="heatmap-wrap">
+          <div class="heatmap" id="heatmap"></div>
+        </div>
+        <div class="heatmap-meta">
+          <span>longest streak: <b style="color:var(--fg)">37 days</b></span>
+          <span>busiest day: <b style="color:var(--fg)">tue · 14 commits</b></span>
+          <span>busiest hour: <b style="color:var(--fg)">02:00 — 03:00</b> <span style="color:var(--fg-muted)">(of course)</span></span>
+          <span class="legend">
+            quieter
+            <span class="swatch" style="background:#1a1a2a"></span>
+            <span class="swatch" style="background: color-mix(in oklch, var(--p1) 20%, #1a1a2a);"></span>
+            <span class="swatch" style="background: color-mix(in oklch, var(--p1) 45%, var(--p3));"></span>
+            <span class="swatch" style="background: color-mix(in oklch, var(--p1) 70%, var(--p3));"></span>
+            <span class="swatch" style="background: linear-gradient(135deg, var(--p1), var(--p3));"></span>
+            louder
+          </span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- PROJECTS                                               -->
+    <!-- ====================================================== -->
+    <section class="page" data-page="projects" data-screen-label="02 Projects">
+
+      <div class="section-label"><span class="num">02</span><span>projects · ~/projects</span></div>
+
+      <div class="ide">
+        <!-- File tree -->
+        <aside class="ide-sidebar">
+          <div class="tree-section">explorer · projects</div>
+          <div class="tree-folder"><span class="glyph">▾</span> <span>📁</span> projects</div>
+          <div class="tree-children" id="file-tree">
+            <!-- populated by JS -->
+          </div>
+          <div class="tree-section">filters</div>
+          <div class="tree-item"><span class="glyph">#</span> ml &amp; data <span style="margin-left:auto; color:var(--fg-muted)">4</span></div>
+          <div class="tree-item"><span class="glyph">#</span> systems <span style="margin-left:auto; color:var(--fg-muted)">2</span></div>
+          <div class="tree-item"><span class="glyph">#</span> stats <span style="margin-left:auto; color:var(--fg-muted)">3</span></div>
+          <div class="tree-item"><span class="glyph">#</span> robotics <span style="margin-left:auto; color:var(--fg-muted)">1</span></div>
+
+          <div class="tree-section">git</div>
+          <div class="tree-item"><span class="glyph">⎇</span> main</div>
+          <div class="tree-item"><span class="glyph">●</span> 2 modified</div>
+          <div class="tree-item"><span class="glyph">+</span> 7 untracked</div>
+        </aside>
+
+        <!-- Tabs + content -->
+        <div>
+          <div class="ide-tabs" id="ide-tabs">
+            <div class="ide-tab active" data-tab="playlist"><span style="color:var(--p3)">♫</span> playlist.tsx <span class="x">×</span></div>
+            <div class="ide-tab" data-tab="01"><span>📄</span> house_pricing.py <span class="x">×</span></div>
+            <div class="ide-tab" data-tab="02"><span>📄</span> perchance.ts <span class="x">×</span></div>
+          </div>
+
+          <div class="ide-content" id="ide-content">
+            <!-- populated -->
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- ABOUT                                                  -->
+    <!-- ====================================================== -->
+    <section class="page" data-page="about" data-screen-label="03 About">
+
+      <div class="section-label"><span class="num">03</span><span>about · whoami --verbose</span></div>
+
+      <div class="about-grid">
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="badge">~/about/identity.json</span>
+              <span class="right">read · 642b</span>
+            </div>
+            <div style="padding: 18px 22px;">
+              <h2 style="margin: 0 0 6px; font-size: 28px; letter-spacing:-0.02em;">abba ndomo</h2>
+              <div style="color: var(--fg-dim); font-size: 13px;">engineer · writer · sample-flipper · sometimes-quant</div>
+
+              <p style="color: var(--fg-dim); margin-top: 18px;">
+                I have lived across <b style="color:var(--fg)">six countries</b> and am proficient in English, Kiswahili, Spanish, Russian, and Azerbaijani. From benchmarking LLMs in fintech to being mentored by a $2M+ student fund, I thrive where math, code, and design meet.
+              </p>
+              <p style="color: var(--fg-dim);">
+                I think probabilistically: about songs, projects, people, queues. I keep a running list of small bets ("if we ship this, posterior over user retention shifts <em style="font-style: normal; color: var(--p3)">→ 0.18</em>") and I'm slowly turning my GitHub into a record label.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:18px;">
+            <div class="panel-head">
+              <span class="badge">~/about/stack.tsv</span>
+              <span class="right">live · last commit 6h ago</span>
+            </div>
+            <div style="padding: 14px 22px 18px;">
+              <div class="langs" id="langs"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:18px;">
+            <div class="panel-head">
+              <span class="badge">~/about/p_distribution.csv</span>
+              <span class="right">posterior — what i think about, by hour</span>
+            </div>
+            <div class="distribution" id="distribution"></div>
+            <div style="display:flex; justify-content: space-between; padding: 4px 16px 12px; font-size: 10.5px; color: var(--fg-muted); letter-spacing: 0.08em;">
+              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:59</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="badge">~/about/facts.kv</span>
+              <span class="right">probability of being correct: 0.91</span>
+            </div>
+            <div style="padding: 14px 22px;">
+              <div class="kv-list">
+                <div class="row"><div class="k">name</div><div class="v">abba ndomo</div></div>
+                <div class="row"><div class="k">school</div><div class="v">georgia tech '26 · cs + math</div></div>
+                <div class="row"><div class="k">currently</div><div class="v">building boxxer · seeking summer 2025 data analyst</div></div>
+                <div class="row"><div class="k">languages</div><div class="v">en · sw · es · ru · az</div></div>
+                <div class="row"><div class="k">favorite distribution</div><div class="v">heavy-tailed — <span style="color:var(--p3)">log-normal</span></div></div>
+                <div class="row"><div class="k">favorite track right now</div><div class="v">a private playboi carti leak from 2019</div></div>
+                <div class="row"><div class="k">last book</div><div class="v">probability theory: the logic of science</div></div>
+                <div class="row"><div class="k">caffeine</div><div class="v">two cortados · stops counting after</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 18px;">
+            <div class="panel-head">
+              <span class="badge">~/about/heatmap_top_artists.png</span>
+              <span class="right">last.fm · all-time</span>
+            </div>
+            <div style="padding: 16px 22px 22px;">
+              <div id="artist-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px;"></div>
+              <div style="font-size: 11px; color: var(--fg-muted); margin-top: 12px;">placeholder artists — drop your real top 12 here.</div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 18px;">
+            <div class="panel-head">
+              <span class="badge">~/about/principles.md</span>
+              <span class="right">5 lines</span>
+            </div>
+            <div style="padding: 14px 22px 18px; font-size: 13px; color: var(--fg-dim);">
+              <div style="margin: 4px 0;"><span style="color:var(--p3)">▸</span> ship the noisy version. iterate the variance away.</div>
+              <div style="margin: 4px 0;"><span style="color:var(--p3)">▸</span> a meeting is just a markov chain with snacks.</div>
+              <div style="margin: 4px 0;"><span style="color:var(--p3)">▸</span> the best features are samples, not designs.</div>
+              <div style="margin: 4px 0;"><span style="color:var(--p3)">▸</span> measure twice, deploy once, monitor forever.</div>
+              <div style="margin: 4px 0;"><span style="color:var(--p3)">▸</span> if it has a tempo, it can be debugged.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- CONTACT                                                -->
+    <!-- ====================================================== -->
+    <section class="page" data-page="contact" data-screen-label="04 Contact">
+
+      <div class="section-label"><span class="num">04</span><span>contact · ssh abba@portfolio</span></div>
+
+      <div class="contact-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="badge">~/contact/message.txt</span>
+            <span class="right">unsent · drafts/01</span>
+          </div>
+          <div style="padding: 20px 24px;">
+            <h2 style="margin: 0 0 6px; font-size: 26px; letter-spacing:-0.02em;">let's get in touch</h2>
+            <p style="color: var(--fg-dim); margin-top: 0;">
+              I respond fastest to email. For everything else — the form below pipes straight into my inbox.
+            </p>
+
+            <form class="contact-form" onsubmit="event.preventDefault(); window.__term&&window.__term.runCmd('clear'); window.__term&&window.__term.runCmd('whoami');">
+              <div class="field">
+                <label>your name</label>
+                <input type="text" placeholder="e.g. ada lovelace" />
+              </div>
+              <div class="field">
+                <label>your email</label>
+                <input type="email" placeholder="ada@analytical.engine" />
+              </div>
+              <div class="field">
+                <label>subject</label>
+                <input type="text" placeholder="we should talk about ___" />
+              </div>
+              <div class="field">
+                <label>message</label>
+                <textarea placeholder="say something interesting. extra credit if you include a probability claim."></textarea>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="submit" class="btn primary"><span class="key" style="background:rgba(0,0,0,0.2); border-color:rgba(255,255,255,0.2);">⌘↵</span>send transmission</button>
+                <span style="color:var(--fg-muted); font-size: 11.5px;">avg response time ≈ <b style="color:var(--fg-dim); font-weight: 500;">14 hours</b> · 95% CI [4h, 36h]</span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="badge">~/contact/links.kv</span>
+              <span class="right">all canonical</span>
+            </div>
+            <div style="padding: 18px 22px;">
+              <a class="qrlink" href="/cdn-cgi/l/email-protection#3d5c5f5f5c1353595250527d5a505c5451135e5250">
+                <div class="glyph">@</div>
+                <div><b>email</b><span style="color:var(--fg-muted)"><span class="__cf_email__" data-cfemail="33525151521d5d575c5e5c73545e525a5f1d505c5e">[email&#160;protected]</span></span></div>
+              </a>
+              <a class="qrlink" href="tel:+14048195945">
+                <div class="glyph">☎</div>
+                <div><b>phone</b><span style="color:var(--fg-muted)">+1 (404) 819-5945</span></div>
+              </a>
+              <a class="qrlink" target="_blank" rel="noopener" href="https://linkedin.com/in/AbbaNdomo">
+                <div class="glyph">in</div>
+                <div><b>linkedin</b><span style="color:var(--fg-muted)">/in/AbbaNdomo</span></div>
+              </a>
+              <a class="qrlink" target="_blank" rel="noopener" href="https://github.com/andomo3">
+                <div class="glyph">⎇</div>
+                <div><b>github</b><span style="color:var(--fg-muted)">/andomo3</span></div>
+              </a>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:18px;">
+            <div class="panel-head">
+              <span class="badge">~/contact/availability.json</span>
+              <span class="right">updated may '26</span>
+            </div>
+            <pre class="code" style="margin: 16px 22px 22px;">
+<span class="ln"> 1</span><span class="kw">export const</span> <span class="var">availability</span> = {
+<span class="ln"> 2</span>  <span class="fn">role</span>: <span class="str">'data analyst — summer 2025'</span>,
+<span class="ln"> 3</span>  <span class="fn">location</span>: [<span class="str">'atlanta'</span>, <span class="str">'remote'</span>, <span class="str">'on-site (relo ok)'</span>],
+<span class="ln"> 4</span>  <span class="fn">timezone</span>: <span class="str">'ET'</span>, <span class="com">// flexible ±5h</span>
+<span class="ln"> 5</span>  <span class="fn">interests</span>: [<span class="str">'quant'</span>, <span class="str">'ml infra'</span>, <span class="str">'analytics'</span>, <span class="str">'devtools'</span>],
+<span class="ln"> 6</span>  <span class="fn">openTo</span>: { <span class="fn">coffee</span>: <span class="num">true</span>, <span class="fn">cold_email</span>: <span class="num">true</span>, <span class="fn">recruiting_spam</span>: <span class="num">false</span> },
+<span class="ln"> 7</span>  <span class="fn">responds_in_hours</span>: <span class="num">14</span>,
+<span class="ln"> 8</span>}</pre>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =============== Now-playing footer =============== -->
+  <footer class="now-playing-bar" role="contentinfo">
+    <div class="npb-left">
+      <div class="npb-cover"></div>
+      <div class="npb-meta">
+        <div class="t" id="npb-title">Automated House Pricing Model</div>
+        <div class="s" id="npb-artist">ML × Real Estate · estimation_99pct</div>
+      </div>
+    </div>
+    <div class="npb-center">
+      <div class="npb-controls">
+        <button class="icon-btn" onclick="window.__term&&window.__term.runCmd('shuffle')" title="shuffle">⤭</button>
+        <button class="icon-btn" onclick="window.__term&&window.__term.runCmd('prev')" title="previous">⏮</button>
+        <button class="play" id="npb-play" onclick="this.textContent = this.textContent==='▶'?'❚❚':'▶';">❚❚</button>
+        <button class="icon-btn" onclick="window.__term&&window.__term.runCmd('next')" title="next">⏭</button>
+        <button class="icon-btn" title="repeat">↻</button>
+      </div>
+      <div class="npb-progress">
+        <span id="npb-elapsed">1:24</span>
+        <div class="bar"><span id="npb-fill"></span></div>
+        <span id="npb-total">3:42</span>
+      </div>
+    </div>
+    <div class="npb-right">
+      <span style="color:var(--fg-muted)">queue · 7</span>
+      <span class="npb-vol">
+        <span style="color:var(--fg-muted)">vol</span>
+        <span class="vbar"><span></span></span>
+      </span>
+    </div>
+  </footer>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="markov.js"></script>
+<script src="terminal.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,448 @@
+/* ====================================================================
+   NOW-PLAYING ENHANCEMENTS
+   - Reactive EQ (scroll velocity drives amplitude + speed)
+   - Visualizer fullscreen overlay (V key or click cover)
+   - Liner notes panel (click ♪ in player)
+   - Setlists (pill row + terminal cmd)
+   ==================================================================== */
+
+/* ---------- Reactive EQ ----------
+   --eq-amp drives scaleY in the @keyframes; --eq-speed drives duration.
+   When scroll is hot, bars get tall and fast. When idle, low and slow. */
+.eq {
+  --eq-amp: 0.55;
+  --eq-speed: 1.4s;
+}
+.eq span { animation-duration: var(--eq-speed) !important; }
+
+/* (visualizer removed) */
+
+/* ====================================================================
+   VISUALIZER OVERLAY
+   ==================================================================== */
+.viz-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in oklch, var(--primary) 18%, transparent), transparent 55%),
+    radial-gradient(circle at 75% 70%, color-mix(in oklch, var(--secondary) 14%, transparent), transparent 55%),
+    rgba(8, 8, 12, 0.92);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  padding: 32px 48px 48px;
+  animation: vizFade 280ms ease;
+  overflow: auto;
+}
+.viz-overlay.open { display: flex; }
+@keyframes vizFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.viz-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.viz-head .num {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.viz-head h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.02em;
+  margin: 4px 0 6px;
+  color: var(--fg);
+}
+.viz-head .sub {
+  color: var(--fg-3);
+  font-size: 14px;
+}
+.viz-head .album {
+  font-family: var(--mono);
+  color: var(--fg-4);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.viz-close {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--hairline);
+  color: var(--fg-2);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 180ms;
+  flex-shrink: 0;
+}
+.viz-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--fg);
+  transform: rotate(90deg);
+}
+
+.viz-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 32px;
+  min-height: 0;
+}
+@media (max-width: 1100px) {
+  .viz-body { grid-template-columns: 1fr; }
+}
+
+.viz-stage {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 28px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+}
+.viz-stage svg, .viz-stage canvas { width: 100%; height: 100%; max-height: 480px; }
+
+.viz-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.viz-stat {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: 16px 18px;
+}
+.viz-stat .label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--fg-4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.viz-stat .value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.viz-stat .delta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--p3);
+  margin-top: 4px;
+}
+.viz-stat .bar {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.viz-stat .bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 2px;
+}
+
+.viz-hint-row {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-4);
+  display: flex;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  flex-wrap: wrap;
+}
+.viz-hint-row kbd {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--fg-2);
+  margin-right: 4px;
+}
+
+/* ---- Visualizer-specific styles ---- */
+
+/* House Pricing */
+.viz-house {
+  width: 100%; max-width: 460px;
+  filter: drop-shadow(0 4px 24px color-mix(in oklch, var(--primary) 25%, transparent));
+}
+.viz-house .frame { stroke: var(--fg-2); stroke-width: 1.5; fill: none; }
+.viz-house .roof { stroke: var(--primary); stroke-width: 2; fill: color-mix(in oklch, var(--primary) 20%, transparent); }
+.viz-house .door, .viz-house .win { stroke: var(--fg-3); stroke-width: 1; fill: rgba(255,255,255,0.04); }
+.viz-house .price-ticker {
+  font-family: var(--mono);
+  font-size: 12px;
+  fill: var(--p3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* NBA court */
+.viz-court { width: 100%; max-width: 540px; }
+.viz-court .court { stroke: var(--fg-3); stroke-width: 1.5; fill: none; }
+.viz-court .key { fill: rgba(213,82,163,0.06); }
+.viz-court .shot { fill: var(--primary); opacity: 0.8; }
+.viz-court .shot.miss { fill: var(--fg-4); opacity: 0.5; }
+.viz-court .shot.live {
+  fill: var(--p3);
+  filter: drop-shadow(0 0 6px color-mix(in oklch, var(--secondary) 60%, transparent));
+}
+
+/* World map */
+.viz-world { width: 100%; max-width: 600px; }
+.viz-world .land { fill: rgba(255,255,255,0.04); stroke: var(--fg-4); stroke-width: 0.5; }
+.viz-world .country-dot {
+  fill: var(--primary);
+  filter: drop-shadow(0 0 6px color-mix(in oklch, var(--primary) 60%, transparent));
+}
+.viz-world .country-dot.high { fill: oklch(0.7 0.18 25); }
+.viz-world .pulse {
+  fill: var(--primary);
+  fill-opacity: 0.4;
+  animation: vizPulse 2.4s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes vizPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Boxxer — stacked boxes */
+.viz-boxes { width: 100%; max-width: 460px; }
+.viz-boxes .box {
+  fill: rgba(213,82,163,0.12);
+  stroke: var(--primary);
+  stroke-width: 1.5;
+}
+.viz-boxes .box.lit {
+  fill: rgba(213,82,163,0.28);
+}
+.viz-boxes .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: var(--fg-3);
+}
+
+/* Queue analysis */
+.viz-queue { width: 100%; max-width: 540px; }
+.viz-queue .road { fill: rgba(255,255,255,0.04); stroke: var(--fg-4); stroke-width: 0.5; }
+.viz-queue .lane-line { stroke: var(--fg-4); stroke-width: 0.5; stroke-dasharray: 4 6; }
+.viz-queue .car { fill: var(--primary); }
+.viz-queue .car.opt { fill: var(--p3); }
+.viz-queue .light { stroke: var(--fg-2); stroke-width: 1; }
+.viz-queue .light.green { fill: oklch(0.75 0.16 145); }
+.viz-queue .light.red { fill: oklch(0.7 0.18 25); }
+
+/* Loan default scatter */
+.viz-scatter { width: 100%; max-width: 540px; }
+.viz-scatter .axis { stroke: var(--fg-4); stroke-width: 0.8; }
+.viz-scatter .axis-label { font-family: var(--mono); font-size: 10px; fill: var(--fg-3); }
+.viz-scatter .pt-good { fill: var(--p3); opacity: 0.7; }
+.viz-scatter .pt-bad { fill: oklch(0.7 0.18 25); opacity: 0.7; }
+.viz-scatter .boundary { stroke: var(--primary); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+/* Robotics lidar */
+.viz-lidar { width: 100%; max-width: 460px; aspect-ratio: 1; }
+.viz-lidar .grid line { stroke: rgba(255,255,255,0.05); stroke-width: 0.5; }
+.viz-lidar .robot { fill: var(--primary); }
+.viz-lidar .ray { stroke: var(--p3); stroke-width: 0.6; opacity: 0.4; }
+.viz-lidar .obstacle { fill: var(--fg-2); }
+.viz-lidar .sweep {
+  fill: url(#lidarGrad);
+  transform-origin: center;
+  animation: lidarSweep 3s linear infinite;
+}
+@keyframes lidarSweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ====================================================================
+   LINER NOTES PANEL  (slides up from above the player)
+   ==================================================================== */
+.liner-panel {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 96px;
+  max-width: 720px;
+  margin: 0 auto;
+  background: rgba(18, 18, 24, 0.96);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  z-index: 90;
+  padding: 22px 26px 24px;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 260ms ease, opacity 220ms ease;
+}
+.liner-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.liner-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+.liner-head .label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--fg-4);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.liner-head .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-top: 2px;
+}
+.liner-head .sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-3);
+}
+.liner-close {
+  background: transparent;
+  border: 0;
+  color: var(--fg-3);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+.liner-close:hover { color: var(--fg); }
+.liner-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--fg-2);
+  text-wrap: pretty;
+  max-height: 36vh;
+  overflow-y: auto;
+}
+.liner-body p + p { margin-top: 10px; }
+.liner-body em { color: var(--p3); font-style: normal; }
+.liner-body .draft-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--fg-4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 3px 7px;
+  border: 1px dashed var(--fg-4);
+  border-radius: 3px;
+  margin-bottom: 14px;
+}
+
+/* Player lyrics button — active state when panel open */
+.player-right .icon-btn.lyrics-active {
+  color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 14%, transparent);
+}
+
+/* ====================================================================
+   SETLISTS
+   ==================================================================== */
+.setlist-bar {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.setlist-bar .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+.setlist-pill {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--hairline);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: all 160ms ease;
+  letter-spacing: 0.01em;
+}
+.setlist-pill:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--fg);
+  border-color: rgba(255,255,255,0.18);
+}
+.setlist-pill.active {
+  background: color-mix(in oklch, var(--primary) 22%, transparent);
+  border-color: color-mix(in oklch, var(--primary) 55%, transparent);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 40%, transparent);
+}
+.setlist-intro {
+  margin: 0 0 16px;
+  padding: 14px 18px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--primary) 14%, transparent),
+    transparent 80%
+  );
+  border-left: 2px solid var(--primary);
+  border-radius: 4px;
+  font-size: 13.5px;
+  color: var(--fg-2);
+  line-height: 1.55;
+  display: none;
+}
+.setlist-intro.show { display: block; animation: slIntro 320ms ease; }
+.setlist-intro b { color: var(--fg); font-weight: 600; }
+.setlist-intro .for {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+@keyframes slIntro {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
