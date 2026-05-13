@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 """
-Fetch commit activity from all public repos and write data/github-commits.json.
+Fetch the last 53 weeks of contributions from the GitHub GraphQL API
+and write data/github-commits.json. Matches the data shown on your
+GitHub profile contributions graph (commits, PRs, issues, reviews —
+including private contributions when authenticated as yourself).
 
 Usage:
   python scripts/fetch-github.py
 
-Optional env var (raises rate limit from 60 to 5000 req/hr):
-  GITHUB_TOKEN  — a fine-grained PAT with "Public Repositories (read-only)" scope
+Required env var (in .env or shell):
+  GITHUB_TOKEN  — a classic PAT with `read:user` scope, OR a fine-grained PAT
+                  with `Account permissions → Profile (read-only)`. The token
+                  must belong to the user whose graph you want.
 
 Output: data/github-commits.json
-  A 52x7 nested array: grid[week][day] = commit_count (week 0 = oldest, day 0 = Sunday)
+  A 53x7 nested array: grid[week][day] = contribution_count.
+  Week 0 is the oldest week, day 0 is Sunday.
 """
 
 import json
 import os
 import sys
-import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -24,7 +29,25 @@ REPO_ROOT   = Path(__file__).resolve().parent.parent
 ENV_FILE    = REPO_ROOT / '.env'
 OUT_FILE    = REPO_ROOT / 'data' / 'github-commits.json'
 GITHUB_USER = 'andomo3'
-API_BASE    = 'https://api.github.com'
+
+QUERY = """
+query($login: String!) {
+  user(login: $login) {
+    contributionsCollection {
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays {
+            date
+            weekday
+            contributionCount
+          }
+        }
+      }
+    }
+  }
+}
+"""
 
 def load_env():
     if ENV_FILE.exists():
@@ -34,79 +57,58 @@ def load_env():
                 k, _, v = line.partition('=')
                 os.environ.setdefault(k.strip(), v.strip())
 
-def get_headers():
-    h = {'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
-    token = os.environ.get('GITHUB_TOKEN')
-    if token:
-        h['Authorization'] = f'Bearer {token}'
-    return h
-
-def api_get(url, retries=3, retry_delay=2):
-    req = urllib.request.Request(url, headers=get_headers())
-    for attempt in range(retries):
-        try:
-            with urllib.request.urlopen(req, timeout=20) as r:
-                if r.status == 202:
-                    # GitHub is computing stats — retry after delay
-                    if attempt < retries - 1:
-                        time.sleep(retry_delay)
-                        continue
-                    return None
-                return json.loads(r.read())
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None
-            if e.code in (403, 429):
-                reset = e.headers.get('X-RateLimit-Reset')
-                if reset:
-                    wait = max(0, int(reset) - int(time.time())) + 2
-                    print(f'  rate limited — waiting {wait}s', file=sys.stderr)
-                    time.sleep(wait)
-                else:
-                    time.sleep(60)
-                continue
-            raise
-    return None
-
-def fetch_repos():
-    repos, page = [], 1
-    while True:
-        url = f'{API_BASE}/users/{GITHUB_USER}/repos?per_page=100&page={page}'
-        batch = api_get(url)
-        if not batch:
-            break
-        repos.extend(batch)
-        if len(batch) < 100:
-            break
-        page += 1
-    return repos
-
-def fetch_commit_grid(repos):
-    grid = [[0] * 7 for _ in range(52)]
-    for i, repo in enumerate(repos):
-        name = repo['name']
-        print(f'  [{i+1}/{len(repos)}] {name}')
-        weeks = api_get(f'{API_BASE}/repos/{GITHUB_USER}/{name}/stats/commit_activity')
-        if not weeks or not isinstance(weeks, list):
-            continue
-        for wi, wk in enumerate(weeks):
-            if wi >= 52:
-                break
-            days = wk.get('days', [])
-            for di, count in enumerate(days[:7]):
-                grid[wi][di] += count
-    return grid
+def graphql(token, query, variables):
+    body = json.dumps({'query': query, 'variables': variables}).encode()
+    req  = urllib.request.Request(
+        'https://api.github.com/graphql',
+        data=body,
+        method='POST',
+        headers={
+            'Authorization':         f'Bearer {token}',
+            'Content-Type':          'application/json',
+            'Accept':                'application/vnd.github+json',
+            'X-GitHub-Api-Version':  '2022-11-28',
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        sys.exit(f'HTTP {e.code}: {e.read().decode()}')
 
 def main():
     load_env()
-    print(f'Fetching repos for {GITHUB_USER}…')
-    repos = fetch_repos()
-    print(f'Found {len(repos)} public repos. Fetching commit activity…')
-    grid = fetch_commit_grid(repos)
-    total = sum(c for week in grid for c in week)
+    token = os.environ.get('GITHUB_TOKEN')
+    if not token:
+        sys.exit(
+            'GITHUB_TOKEN required. Create a classic PAT with read:user scope at\n'
+            '  https://github.com/settings/tokens/new\n'
+            'then add it to .env as GITHUB_TOKEN=ghp_...'
+        )
+
+    print(f'Fetching contributions for {GITHUB_USER}…')
+    data = graphql(token, QUERY, {'login': GITHUB_USER})
+
+    if 'errors' in data:
+        sys.exit(f'GraphQL errors: {data["errors"]}')
+
+    cal   = data['data']['user']['contributionsCollection']['contributionCalendar']
+    weeks = cal['weeks']
+
+    # Build a 53x7 grid (some accounts return 52 weeks; we pad if short).
+    grid = []
+    for wk in weeks:
+        days = [0] * 7
+        for d in wk['contributionDays']:
+            days[d['weekday']] = d['contributionCount']
+        grid.append(days)
+    while len(grid) < 53:
+        grid.insert(0, [0] * 7)
+    grid = grid[-53:]
+
     OUT_FILE.parent.mkdir(exist_ok=True)
     OUT_FILE.write_text(json.dumps(grid) + '\n')
-    print(f'Done — {total} total commits → {OUT_FILE}')
+    print(f'Done — {cal["totalContributions"]} contributions across {len(grid)} weeks → {OUT_FILE}')
 
 if __name__ == '__main__':
     main()
