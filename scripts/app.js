@@ -90,7 +90,7 @@
     if (!(e.metaKey || e.ctrlKey)) return;
     const map = { '1': 'home', '2': 'projects', '3': 'about', '4': 'contact' };
     if (map[e.key]) { e.preventDefault(); navigate(map[e.key]); }
-    if (e.key === 'k') { e.preventDefault(); const s = document.getElementById('search'); if (s) s.focus(); }
+    if (e.key === 'k') { e.preventDefault(); const t = document.getElementById('term-input'); if (t) t.focus(); }
   });
 
   // ----------- Contextual icons (24px, line) -----------
@@ -108,8 +108,8 @@
     const el = document.createElement('div');
     el.className = 'tile';
     el.innerHTML = `
-      <div class="art">
-        <div class="art-icon">${ICONS[p.id] || ''}</div>
+      <div class="art" data-pid="${p.id}">
+        <div class="play-overlay"></div>
       </div>
       <div class="title">${p.title}</div>
       <div class="sub">${p.sub.split('.')[0]}</div>
@@ -121,9 +121,7 @@
     return el;
   }
   const featured = document.getElementById('featured-shelf');
-  const recent = document.getElementById('recent-shelf');
   if (featured) PROJECT_FILES.slice(0, 4).forEach(p => featured.appendChild(tile(p)));
-  if (recent) PROJECT_FILES.slice().reverse().slice(0, 5).forEach(p => recent.appendChild(tile(p)));
 
   // ----------- File tree + IDE tabs -----------
   const tree = document.getElementById('file-tree');

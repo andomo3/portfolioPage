@@ -229,40 +229,6 @@ button { font-family: inherit; }
 }
 .header .nav-btn:hover { background: rgba(255,255,255,0.1); color: var(--fg); }
 
-.searchbar {
-  flex: 1;
-  max-width: 360px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--fg-3);
-  font-size: 13px;
-  cursor: text;
-  transition: 140ms;
-}
-.searchbar:hover { background: rgba(255,255,255,0.09); }
-.searchbar input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--fg);
-  font-family: inherit;
-  font-size: 13px;
-}
-.searchbar input::placeholder { color: var(--fg-3); }
-.searchbar .kbd {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  color: var(--fg-4);
-  background: rgba(255,255,255,0.06);
-  border-radius: 4px;
-  padding: 1px 6px;
-}
 
 .header .right {
   margin-left: auto;
@@ -395,7 +361,7 @@ button { font-family: inherit; }
 .hero-art .portrait {
   position: absolute;
   inset: 14px;
-  border-radius: 50%;
+  border-radius: 18px;
   background:
     radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18), transparent 60%),
     #1a1a22;
@@ -536,26 +502,163 @@ button { font-family: inherit; }
   border-radius: var(--r-md);
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-  background: rgba(255,255,255,0.04);
   border: 1px solid var(--hairline);
   display: grid;
   place-items: center;
+  image-rendering: pixelated;
 }
-.tile .art-icon {
-  width: 38%;
-  color: var(--fg-2);
-  opacity: 0.85;
-  transition: color 200ms, opacity 200ms;
+
+/* pixel grid overlay on all tiles */
+.tile .art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(to right, rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 5px),
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 5px);
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
 }
-.tile .art-icon svg { width: 100%; height: auto; display: block; }
-.tile:hover .art-icon { color: var(--primary); opacity: 1; }
+
+/* ── 01 PerChance / NBA — Slam Dunk palette ── */
+.tile .art[data-pid="01"] {
+  background: #0d0400;
+}
+.tile .art[data-pid="01"]::after {
+  content: '';
+  position: absolute;
+  width: 42%;
   aspect-ratio: 1;
-  border-radius: var(--r-md);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--hairline);
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #ff7518 0%, #c94200 55%, #7a1e00 100%);
+  box-shadow: inset -4px -4px 0 rgba(0,0,0,0.35), 0 0 0 3px #ff9a00, 0 0 24px rgba(255,100,0,0.45);
+  animation: px-bounce 1.6s cubic-bezier(0.33,0,0.66,0) infinite;
+  z-index: 1;
+}
+@keyframes px-bounce {
+  0%, 100% { transform: translateY(-28%); }
+  48%       { transform: translateY(26%) scaleX(1.12) scaleY(0.88); }
+  52%       { transform: translateY(26%) scaleX(1.12) scaleY(0.88); }
+}
+
+/* ── 02 Altura / Real Estate — amber city ── */
+.tile .art[data-pid="02"] {
+  background: linear-gradient(180deg, #070400 0%, #1a0d00 60%, #2a1500 100%);
+}
+.tile .art[data-pid="02"]::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 68%;
+  background: #d4900a;
+  clip-path: polygon(
+    0% 100%, 0% 62%, 5% 62%, 5% 42%, 10% 42%, 10% 22%, 14% 22%, 14% 42%,
+    20% 42%, 20% 52%, 25% 52%, 25% 28%, 29% 28%, 29% 18%, 33% 18%,
+    33% 28%, 37% 28%, 37% 50%, 43% 50%, 43% 38%, 47% 38%, 47% 10%,
+    51% 10%, 51% 38%, 55% 38%, 55% 52%, 61% 52%, 61% 34%, 65% 34%,
+    65% 52%, 70% 52%, 70% 44%, 74% 44%, 74% 24%, 78% 24%, 78% 44%,
+    83% 44%, 83% 56%, 89% 56%, 89% 42%, 93% 42%, 93% 56%, 100% 56%, 100% 100%
+  );
+  animation: px-city 4s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes px-city {
+  0%, 100% { opacity: 0.65; filter: brightness(0.85); }
+  50%       { opacity: 1;    filter: brightness(1.2); }
+}
+
+/* ── 03 GTSF / Stocks — terminal green ── */
+.tile .art[data-pid="03"] {
+  background: #000f03;
+}
+.tile .art[data-pid="03"]::after {
+  content: '';
+  position: absolute;
+  inset: 14% 10%;
+  background:
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 10% 72%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 22% 60%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 34% 68%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 46% 50%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 58% 38%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 70% 24%,
+    linear-gradient(to top, #00ff41 0px, #00ff41 4px, transparent 4px) no-repeat 82% 14%;
+  background-size:
+    10% 30%, 10% 42%, 10% 34%, 10% 52%, 10% 64%, 10% 78%, 10% 88%;
+  mix-blend-mode: screen;
+  animation: px-bars 2.4s ease-in-out infinite;
+  z-index: 1;
+  filter: drop-shadow(0 0 6px #00ff41);
+}
+@keyframes px-bars {
+  0%, 100% { opacity: 0.7; transform: scaleY(0.94); }
+  50%       { opacity: 1;   transform: scaleY(1); }
+}
+
+/* ── 04 Document Intelligence — Ghost in the Shell cyber ── */
+.tile .art[data-pid="04"] {
+  background: #000814;
+}
+.tile .art[data-pid="04"]::after {
+  content: '0110\A 1010\A 1101\A 0011\A 1100\A 0101';
+  white-space: pre;
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 3px;
+  color: #00d4ff;
+  text-shadow: 0 0 8px #00d4ff, 0 0 20px rgba(0,212,255,0.4);
+  animation: px-code 3s steps(1) infinite;
+  z-index: 1;
+  image-rendering: auto;
+}
+@keyframes px-code {
+  0%  { opacity: 1;    color: #00d4ff; }
+  30% { opacity: 0.4;  color: #0099cc; }
+  60% { opacity: 1;    color: #33eeff; }
+  80% { opacity: 0.6;  color: #00d4ff; }
+  100%{ opacity: 1; }
+}
+
+/* ── 05 Loan Default / Credit — Cowboy Bebop gold ── */
+.tile .art[data-pid="05"] {
+  background: #080412;
+}
+.tile .art[data-pid="05"]::after {
+  content: '';
+  position: absolute;
+  width: 72%; height: 46%;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 40%, #2d1060 100%);
+  box-shadow: 0 0 0 2px #fbbf24, inset 0 1px 0 rgba(255,255,255,0.15), 0 8px 28px rgba(109,40,217,0.5);
+  animation: px-card 3.6s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes px-card {
+  0%, 100% { transform: rotate(-4deg) translateY(0);    box-shadow: 0 0 0 2px #fbbf24, 0 8px 28px rgba(109,40,217,0.5); }
+  50%       { transform: rotate(2deg) translateY(-8px); box-shadow: 0 0 0 2px #fde68a, 0 16px 36px rgba(109,40,217,0.7); }
+}
+
+/* ── 06 Hospital Ops — teal heartbeat ── */
+.tile .art[data-pid="06"] {
+  background: #000d0d;
+}
+.tile .art[data-pid="06"]::after {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%;
+  height: 3px;
+  top: 50%;
+  background: #0ff;
+  box-shadow: 0 0 8px #0ff, 0 0 20px rgba(0,255,255,0.4);
+  clip-path: polygon(
+    0% 50%, 20% 50%, 27% 50%, 31% 0%, 35% 100%, 39% 50%, 46% 50%,
+    50% 20%, 54% 80%, 58% 50%, 80% 50%, 100% 50%
+  );
+  animation: px-beat 1.4s ease-in-out infinite;
+  z-index: 1;
 }
 .tile .art .play-overlay {
   position: absolute;
@@ -600,7 +703,10 @@ button { font-family: inherit; }
   overflow: hidden;
 }
 
-/* legacy art variants removed — icons used now */
+@keyframes px-beat {
+  0%, 100% { transform: scaleX(1);    opacity: 1; }
+  50%       { transform: scaleX(1.04); opacity: 0.7; }
+}
 
 /* ---------- Playlist (Apple Music table) ---------- */
 .playlist {
@@ -777,6 +883,29 @@ button { font-family: inherit; }
   font-family: var(--sans);
   font-size: 11px;
   color: var(--fg-4);
+}
+
+/* terminal now-playing card */
+.np {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  white-space: normal;
+}
+.np .icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  color: var(--good);
+  width: 14px;
+}
+.np .time {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: var(--fg-4);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* now-playing line */

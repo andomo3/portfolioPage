@@ -65,16 +65,7 @@
     const icon = playing
       ? `<span class="eq"><span></span><span></span><span></span><span></span></span>`
       : `<span style="color:var(--fg-muted)">▸</span>`;
-    return `
-      <div class="np">
-        <div class="icon">${icon}</div>
-        <div>
-          <div><span class="title">${t.title}</span> <span class="dim" style="color:var(--fg-muted)">— ${t.artist}</span></div>
-          <div style="color:var(--fg-muted); font-size: 11.5px;">album: <span style="color:var(--fg-dim)">${t.album}</span> · stack: ${t.stack.join(' · ')}</div>
-        </div>
-        <div class="time">${t.dur}</div>
-      </div>
-    `;
+    return `<div class="np"><div class="icon">${icon}</div><div><div><span class="title">${t.title}</span> <span class="dim" style="color:var(--fg-muted)">— ${t.artist}</span></div><div style="color:var(--fg-muted);font-size:11.5px;">album: <span style="color:var(--fg-dim)">${t.album}</span> · stack: ${t.stack.join(' · ')}</div></div><div class="time">${t.dur}</div></div>`;
   }
 
   // ---------- Boot intro (animated) ----------

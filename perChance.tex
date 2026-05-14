@@ -1,0 +1,935 @@
+% ============================================================
+% NBA Player Prop Prediction — Research Paper
+% ============================================================
+% Suggested venue: PLOS ONE or MIT Sloan Sports Analytics
+% Compile: pdflatex paper.tex  (run twice for references)
+% Bibliography: bibtex paper   (then pdflatex twice more)
+% ============================================================
+
+\documentclass[12pt, letterpaper]{article}
+
+% ── Packages ─────────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}           % professional tables (\toprule, \midrule, \bottomrule)
+\usepackage{multirow}           % multi-row table cells
+\usepackage{array}              % extended column formats
+\usepackage{hyperref}           % clickable citations / URLs
+\usepackage{url}
+\usepackage{natbib}             % author-year citations: \citep{} \citet{}
+\usepackage{caption}
+\usepackage{subcaption}         % side-by-side figures
+\usepackage{setspace}
+\usepackage{parskip}            % space between paragraphs instead of indent
+\usepackage{xcolor}
+\usepackage{listings}           % code snippets if needed
+\usepackage{float}              % [H] figure placement
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\doublespacing                  % remove for submission if venue requires single
+
+% ── Title block ───────────────────────────────────────────────────────────────
+\title{
+    \textbf{Gradient Boosting Regression for NBA Player Prop Prediction:}\\
+    \large Walk-Forward Validation, Feature Attribution,\\
+    and Simulated Betting Performance
+}
+
+\author{
+    Abba Otieno Ndomo\\
+    \small [Institution]\\
+    \small \href{mailto:abba.ndomo@gmail.com}{abba.ndomo@gmail.com}
+}
+
+\date{\today}
+
+% =============================================================
+\begin{document}
+% =============================================================
+
+\maketitle
+
+% ── Abstract ──────────────────────────────────────────────────────────────────
+\begin{abstract}
+Player proposition (prop) betting markets in the NBA present a challenging
+regression problem: predicting individual player statistics --- points, rebounds,
+and assists --- from historical performance and contextual features.
+We develop a gradient boosting regression system that trains separate
+XGBoost models for each statistic using per-player rolling averages,
+exponential moving averages, season baselines, hot/cold streak indicators,
+and opponent defensive context features.
+Trained on 1.1 million player-game observations spanning 2016--2024,
+the models are evaluated under walk-forward cross-validation across four
+held-out NBA seasons (2021--2024), yielding mean absolute errors of
+4.84 points, 1.97 rebounds, and 1.41 assists.
+We compare performance against three baselines --- a naive recency heuristic,
+linear regression, and random forest --- all trained on identical feature sets.
+SHAP (SHapley Additive exPlanations) analysis identifies the 10-game rolling
+average, season expanding mean, and exponential moving average as the three
+most influential predictors across all statistics, while opponent defensive
+context contributes meaningful secondary signal.
+A simulated betting experiment using synthetic market lines demonstrates
+that the XGBoost model generates positive return on investment relative to
+a linear regression baseline (+13.1\% ROI on points at a 1-point edge
+threshold, $N=17{,}685$ bets), suggesting the model captures non-linear
+structure beyond what simpler models extract from the same features.
+We discuss limitations of synthetic line evaluation and directions for
+future work using historical closing lines.
+
+\medskip
+\noindent\textbf{Keywords:} NBA, player proposition betting, gradient boosting,
+XGBoost, SHAP, walk-forward cross-validation, sports analytics
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% =============================================================
+\section{Introduction}
+\label{sec:intro}
+% =============================================================
+
+The NBA player proposition (prop) betting market has grown substantially
+following the 2018 repeal of the Professional and Amateur Sports Protection
+Act (PASPA), with per-game player prop volume now rivalling traditional
+moneyline and spread markets~\citep{galekwa2024systematic}.
+Sportsbooks set prop lines by estimating expected statistical output ---
+typically points, rebounds, or assists --- for individual players, and bettors
+wager on whether a player will exceed (\textit{over}) or fall short
+(\textit{under}) of that line.
+For a bettor, consistently predicting these values more accurately than the
+market line --- even marginally --- can yield positive expected value at the
+standard -110 juice, which requires only a 52.38\% win rate to break even.
+
+The academic literature on basketball prediction has focused predominantly on
+binary game-outcome classification (win/loss)~\citep{chen2021hybrid,ouyang2024xgboost,nature2025stacked}.
+Individual player stat prediction, which requires regression over a continuous
+target rather than a binary one, has received comparatively less
+attention~\citep{galekwa2024systematic, plosone2025systematic}.
+This distinction matters practically: game-outcome models are not directly
+actionable for prop bettors, who need a point estimate and uncertainty
+bound for a single player's output on a given night.
+Furthermore, most prior work evaluates on a single chronological split,
+which overstates generalization performance when the data distribution
+shifts across seasons due to changes in pace, lineup construction,
+and rule enforcement.
+
+This paper makes the following contributions:
+\begin{enumerate}
+    \item A gradient boosting regression pipeline that trains separate
+          XGBoost~\citep{chen2016xgboost} models for points, rebounds,
+          and assists using stat-specific feature sets incorporating
+          rolling windows, exponential smoothing, and opponent defensive context.
+    \item A walk-forward cross-validation protocol that evaluates temporal
+          generalization across four held-out NBA seasons (2021--2024),
+          avoiding the look-ahead bias of a single chronological
+          split~\citep{cerqueira2020evaluating}.
+    \item Comparison against three baselines --- a naive last-5-game average,
+          linear regression, and random forest --- all on identical features,
+          isolating the contribution of model complexity from feature
+          engineering.
+    \item SHAP~\citep{lundberg2017unified} feature attribution identifying
+          which features drive predictions and validating that opponent
+          defensive context and exponential momentum add signal beyond
+          simple recency.
+    \item A simulated betting experiment demonstrating positive return on
+          investment relative to a linear regression synthetic line,
+          with explicit discussion of limitations inherent to any
+          evaluation against synthetic rather than market-closing lines.
+\end{enumerate}
+
+% =============================================================
+\section{Related Work}
+\label{sec:related}
+% =============================================================
+
+\subsection{Basketball Outcome Prediction}
+
+Machine learning has been applied extensively to NBA game-outcome
+classification.
+\citet{chen2021hybrid} proposed a two-stage XGBoost model for NBA game
+outcome prediction, identifying lagged shooting percentages, defensive
+rebounds, and assists as the most predictive features.
+\citet{ouyang2024xgboost} extended this with SHAP analysis on 2021--2023
+NBA data, finding field goal percentage and defensive rebounds to be
+consistently dominant at the team level.
+\citet{nature2025stacked} demonstrated that stacked ensemble approaches
+combining multiple base learners improved game-outcome accuracy over
+any single model.
+In contrast to these game-level classifiers, our work targets individual
+player statistics --- a continuous regression task with higher variance,
+as player-level output is subject to foul trouble, minutes management,
+and in-game matchup adjustments that cancel out at the team level.
+
+\subsection{Sports Betting Market Efficiency}
+
+\citet{baryla2007learning} demonstrated statistically significant
+inefficiencies in NBA totals lines early in the season, achieving a
+56.72\% win rate over 20 years by exploiting early-season bias in
+closing totals, suggesting that market participants require several weeks
+of current-season data to form accurate priors.
+A systematic review by \citet{galekwa2024systematic} notes that
+machine learning approaches to sports betting consistently outperform
+naive baselines in backtesting but that the magnitude of edge shrinks
+substantially when evaluated against sharp closing lines rather than
+opening or mid-market prices.
+Our betting simulation is explicitly positioned as a relative benchmark
+(XGBoost vs.\ linear regression on identical features) rather than a
+claim of absolute profitability against real sportsbook lines.
+
+\subsection{Gradient Boosting for Sports Prediction}
+
+XGBoost~\citep{chen2016xgboost} has become a standard benchmark on
+tabular prediction tasks due to its handling of mixed feature types,
+built-in regularization, and computational efficiency.
+It has been applied successfully to game-level basketball
+prediction~\citep{chen2021hybrid,ouyang2024xgboost} and outperforms
+deep learning approaches on feature-engineered tabular data in
+most sports analytics benchmarks~\citep{plosone2025systematic}.
+Our use of per-player rolling features and opponent context is
+consistent with the feature engineering approach reported as most
+effective in this literature.
+
+\subsection{Explainability in Sports Models}
+
+SHAP~\citep{lundberg2017unified} provides a game-theoretically grounded
+decomposition of model predictions into per-feature additive contributions,
+enabling consistent comparison of feature importance across models and
+data subsets.
+\citet{ouyang2024xgboost} applied SHAP to a game-outcome XGBoost model
+and found field goal percentage and team defensive rating to be the most
+influential team-level features.
+To our knowledge, SHAP has not previously been applied to individual
+player stat regression for prop betting, making our feature attribution
+analysis a novel contribution to this sub-field.
+
+% =============================================================
+\section{Data and Feature Engineering}
+\label{sec:data}
+% =============================================================
+
+\subsection{Dataset}
+
+The primary dataset comprises 1,648,656 player-game records spanning NBA
+seasons from 1951 to 2025, sourced from the ESPN unofficial public API.
+After filtering to Regular Season, Playoff, and Play-in Tournament games
+with a minimum of 10 minutes played, and restricting to seasons from 2016
+onward to reflect modern-era play style, 1,120,817 records remain across
+4,273 unique players.
+The 10-minute minimum excludes garbage-time appearances and players with
+insufficient context to build meaningful rolling features.
+The 2016 cutoff reflects the rapid structural shift in NBA offence
+following the emergence of the three-point revolution; including earlier
+data risks introducing distribution mismatch between training and test.
+
+\subsection{Per-Player Rolling Features}
+
+For each player, the following features are computed using a causal rolling
+window (shifted by one game to prevent data leakage):
+
+\begin{itemize}
+    \item \textbf{Rolling means:} $\bar{x}^{(5)}$, $\bar{x}^{(10)}$ ---
+          5- and 10-game simple moving averages for points, rebounds,
+          assists, minutes, and field goal percentage.
+    \item \textbf{Exponential moving average:}
+          $\text{EMA}^{(5)}_t = \alpha x_{t-1} + (1-\alpha)\text{EMA}^{(5)}_{t-1}$,
+          with span $s=5$ ($\alpha = 2/(s+1)$), capturing recent momentum
+          with exponentially decaying weights.
+    \item \textbf{Rolling standard deviation:} $\sigma^{(10)}$ over the
+          last 10 games, used as a dispersion estimate for probability
+          calculation.
+    \item \textbf{Days rest:} days since the player's previous game,
+          clipped at 10.
+    \item \textbf{Season expanding average:} $\mu^{\text{season}}_t =
+          \frac{1}{t-1}\sum_{k=1}^{t-1} x_k$, computed per player per
+          season year.
+    \item \textbf{Hot/cold streak:}
+          \begin{equation}
+              \text{hot\_cold} = \frac{\bar{x}^{(5)} - \mu^{\text{season}}}
+              {|\mu^{\text{season}}| + 0.1}
+              \label{eq:hotcold}
+          \end{equation}
+          A positive value indicates the player is performing above their
+          season average over the last 5 games.
+\end{itemize}
+
+\subsection{Opponent Defensive Context}
+
+For each game, player statistics are aggregated at the team level by
+grouping on (game identifier, opposing team). This yields the total points,
+rebounds, and assists allowed by each defending team per game.
+A 10-game rolling average of these totals, shifted by one game
+($\text{opp\_pts\_allowed\_L10}$, etc.), is then merged back to each
+player row as a defensive context feature.
+This approach approximates the ``defensive rating'' concept used in
+basketball analytics but is computed from the same player-level data
+as the target variable, avoiding the need for external box-score aggregates.
+
+\subsection{Feature Sets by Statistic}
+
+Each statistic uses a distinct feature set reflecting the different
+contextual factors that drive scoring, rebounding, and playmaking.
+Table~\ref{tab:features} lists the full feature sets.
+
+\begin{table}[H]
+\centering
+\caption{Feature sets by prediction target.}
+\label{tab:features}
+\begin{tabular}{llp{7cm}}
+\toprule
+\textbf{Stat} & \textbf{Features} & \textbf{Notes} \\
+\midrule
+\multirow{3}{*}{Points}
+  & is\_home, days\_rest & Situational \\
+  & pts\_L5/10, pts\_ema\_L5, pts\_std\_L10 & Recency \\
+  & reb\_L5, ast\_L5, min\_L5/10, fg\_pct\_L5/10 & Role context \\
+  & season\_avg\_pts, hot\_cold\_pts & Baseline / form \\
+  & opp\_pts\_allowed\_L10 & Opponent defense \\
+\midrule
+\multirow{3}{*}{Rebounds}
+  & is\_home, days\_rest & Situational \\
+  & reb\_L5/10, reb\_ema\_L5, reb\_std\_L10 & Recency \\
+  & pts\_L5, min\_L5/10 & Role context \\
+  & season\_avg\_reb, hot\_cold\_reb & Baseline / form \\
+  & opp\_reb\_allowed\_L10 & Opponent defense \\
+\midrule
+\multirow{3}{*}{Assists}
+  & is\_home, days\_rest & Situational \\
+  & ast\_L5/10, ast\_ema\_L5, ast\_std\_L10 & Recency \\
+  & pts\_L5, min\_L5/10, fg\_pct\_L5 & Role context \\
+  & season\_avg\_ast, hot\_cold\_ast & Baseline / form \\
+  & opp\_ast\_allowed\_L10 & Opponent defense \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =============================================================
+\section{Methodology}
+\label{sec:method}
+% =============================================================
+
+\subsection{Model Architecture}
+
+Three independent XGBoost regressors~\citep{chen2016xgboost} are trained,
+one per statistic, using the squared error objective
+($\texttt{reg:squarederror}$).
+Hyperparameters are held constant across all three models:
+learning rate $\eta = 0.05$, maximum tree depth $= 6$,
+subsample ratio $= 0.8$, column subsample $= 0.8$,
+minimum child weight $= 5$.
+Early stopping with a patience of 50 rounds prevents overfitting,
+with the test fold used as the validation set during training.
+The same architecture is used in all four walk-forward folds and in
+the final production model.
+
+\subsection{Walk-Forward Cross-Validation}
+\label{subsec:wfcv}
+
+To evaluate temporal generalization, we employ a walk-forward
+(rolling-origin) cross-validation scheme~\citep{cerqueira2020evaluating}.
+Training data grows by one season per fold, and the model is tested
+on the immediately following season only:
+
+\begin{table}[H]
+\centering
+\caption{Walk-forward fold definitions.}
+\label{tab:folds}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Fold} & \textbf{Train} & \textbf{Test} \\
+\midrule
+1 & 2016--2020 & 2021 \\
+2 & 2016--2021 & 2022 \\
+3 & 2016--2022 & 2023 \\
+4 & 2016--2023 & 2024 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This design mirrors real deployment: a model retrained at the start of each
+season on all prior data tests on that season's games.
+Test folds contain between 20,338 (2023) and 28,338 (2021) player-game
+observations.
+
+\subsection{Baseline Models}
+
+Four models are compared under identical walk-forward folds:
+
+\begin{enumerate}
+    \item \textbf{Naive L5}: predicts the player's last-5-game rolling
+          average. Requires no training and represents a pure recency
+          heuristic --- effectively what a bettor would use without any
+          model.
+    \item \textbf{Linear Regression}: ordinary least squares on the full
+          feature set for each statistic.
+    \item \textbf{Random Forest}: an ensemble of 200 decision trees with
+          maximum depth 10, minimum samples per leaf 5, trained with a
+          fixed random seed for reproducibility.
+    \item \textbf{XGBoost}: gradient boosted trees as described above.
+\end{enumerate}
+
+All models receive the same feature matrix; no additional features are
+made available to any model. This isolates the effect of model capacity
+from the effect of feature engineering.
+
+\subsection{SHAP Feature Attribution}
+
+SHAP (SHapley Additive exPlanations)~\citep{lundberg2017unified} values
+are computed using \texttt{shap.TreeExplainer} on a random sample of
+5,000 player-game observations from the 2024 season hold-out, using
+the final model trained on all prior seasons (2016--2023).
+Mean absolute SHAP values rank features by their average contribution
+to prediction magnitude.
+SHAP values are additive: the prediction for any observation equals the
+model's base value plus the sum of all SHAP values, providing a
+faithful attribution without the double-counting issues of Gini importance
+or permutation methods.
+
+\subsection{Betting Simulation}
+\label{subsec:sim}
+
+A flat-unit betting simulation is conducted over all walk-forward
+test predictions (2021--2024, $N = 94{,}462$ player-game observations
+per statistic).
+
+\paragraph{Synthetic market lines.}
+In the absence of historical sportsbook closing lines, we construct
+three synthetic line proxies of increasing sophistication:
+(i) the player's 10-game simple rolling average ($L_{10}$);
+(ii) a 5-game exponential moving average ($\text{EMA}_5$);
+and (iii) the linear regression model's prediction for that game,
+using identical features to XGBoost.
+The third proxy is the most conservative benchmark: both models see
+the same information, so any positive XGBoost edge reflects
+non-linear model capacity rather than information advantage.
+The EMA$_5$ line over-weights the most recent 1--2 games and is
+therefore \textit{noisier} than the $L_{10}$ line, not more efficient;
+positive ROI against it does not constitute evidence of market
+inefficiency.
+
+\paragraph{Bet signal.}
+A bet is placed when the absolute difference between the XGBoost
+projection and the synthetic line exceeds a threshold $\tau$:
+\begin{equation}
+    \text{Bet OVER if } \hat{y}_{\text{XGB}} > \ell + \tau, \quad
+    \text{Bet UNDER if } \hat{y}_{\text{XGB}} < \ell - \tau
+    \label{eq:betsignal}
+\end{equation}
+where $\ell$ is the synthetic line value and $\tau \in \{0.0, 0.5,
+1.0, 1.5, 2.0, 2.5\}$ (in stat units).
+
+\paragraph{Payout structure.}
+Standard -110 juice is assumed: a winning bet returns $+0.909$ units
+per unit risked; a losing bet costs $-1.0$ unit.
+The break-even win rate is $52.38\%$. ROI is defined as total profit
+divided by number of bets placed.
+
+% =============================================================
+\section{Results}
+\label{sec:results}
+% =============================================================
+
+\subsection{Prediction Accuracy}
+
+Table~\ref{tab:mae} reports mean absolute error (MAE) averaged across
+all four walk-forward folds for each model and statistic.
+Full per-fold results appear in Appendix~\ref{app:folds}.
+
+\begin{table}[H]
+\centering
+\caption{Walk-forward MAE by model and statistic (mean across folds 2021--2024).
+         Bold indicates best performance per stat.}
+\label{tab:mae}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Stat} & \textbf{Naive L5} & \textbf{Linear} & \textbf{Rand.\ Forest} & \textbf{XGBoost} & \textbf{$\Delta$ vs Naive} \\
+\midrule
+Points    & 5.082 & 4.884 & 4.839 & \textbf{4.840} & $-4.8\%$ \\
+Rebounds  & 2.070 & 1.986 & \textbf{1.968} & 1.966 & $-5.0\%$ \\
+Assists   & 1.478 & 1.428 & 1.413 & \textbf{1.412} & $-4.5\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+XGBoost improves over the naive L5 heuristic by 4.5--5.0\% in mean MAE
+across all three statistics.
+The improvement over linear regression is more modest (0.9--1.2\%),
+which indicates that the bulk of the gain over the naive baseline is
+attributable to the richer feature set rather than to model non-linearity.
+Notably, random forest and XGBoost perform almost identically: their MAEs
+differ by at most 0.002 points, 0.002 rebounds, and 0.001 assists.
+This near-parity suggests the dataset is well-described by additive
+non-linear interactions that both ensemble methods capture, and that
+marginal gains from XGBoost's sequential boosting over random forest's
+parallel bagging are negligible at this feature dimensionality.
+
+Fold-level results (Appendix~\ref{app:folds}) show consistent performance
+across years with a slight upward trend in MAE from fold 1 (2021) to fold 4
+(2024) for all models.
+For points, XGBoost MAE increases from 4.770 (2021) to 4.859 (2024),
+an increase of 1.9\% over four seasons.
+This drift is observed equally in all four models, suggesting it reflects
+increasing variance in the test data --- potentially attributable to
+roster turnover, pace changes, or load management --- rather than
+model degradation.
+
+\subsection{SHAP Feature Importance}
+
+Figure~\ref{fig:shap} shows SHAP beeswarm plots for all three models on a
+5,000-observation random sample from the 2024 test set.
+Full ranked importance tables appear in Appendix~\ref{app:shap}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/shap_beeswarm_pts.png}
+        \caption{Points}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/shap_beeswarm_reb.png}
+        \caption{Rebounds}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/shap_beeswarm_ast.png}
+        \caption{Assists}
+    \end{subfigure}
+    \caption{SHAP beeswarm plots for the final XGBoost models evaluated on
+             5,000 randomly sampled 2024-season observations. Each dot
+             represents one player-game; colour encodes feature value
+             (red = high, blue = low); horizontal position encodes SHAP
+             contribution to the prediction.}
+    \label{fig:shap}
+\end{figure}
+
+\paragraph{Points model.}
+The 10-game rolling average (\texttt{pts\_L10}) is the dominant feature
+by a large margin (mean $|\text{SHAP}| = 2.752$), followed by the season
+expanding mean (\texttt{season\_avg\_pts} = 1.134) and the 5-game
+exponential moving average (\texttt{pts\_ema\_L5} = 1.100).
+The near-equal contribution of \texttt{season\_avg\_pts} and
+\texttt{pts\_ema\_L5} confirms that both the player's long-run baseline
+and recent momentum carry independent predictive signal.
+Opponent defensive context (\texttt{opp\_pts\_allowed\_L10} = 0.346) ranks
+fourth, validating that matchup difficulty adds information beyond
+the player's own history.
+Minutes played (\texttt{min\_L5} = 0.313) ranks fifth, reflecting
+that role fluctuations are a meaningful source of variance in scoring.
+Home/away status (\texttt{is\_home} = 0.187) and days rest (0.145) add
+modest but non-negligible contributions.
+
+\paragraph{Rebounds model.}
+The same three-feature hierarchy appears: \texttt{reb\_L10} (0.931),
+\texttt{season\_avg\_reb} (0.643), \texttt{reb\_ema\_L5} (0.367).
+Minutes features (\texttt{min\_L5} = 0.185, \texttt{min\_L10} = 0.159)
+rank higher relative to the points model, consistent with the fact that
+rebounding opportunity is more directly tied to time on the floor than
+scoring, which is also influenced by shot selection and usage.
+Opponent rebounds allowed (\texttt{opp\_reb\_allowed\_L10} = 0.075)
+ranks seventh --- lower than for points --- suggesting defensive context
+has less marginal value for rebounding prediction, possibly because
+team rebounding rates are less variable than points allowed per game.
+
+\paragraph{Assists model.}
+The top-three structure is again \texttt{ast\_L10} (0.770),
+\texttt{season\_avg\_ast} (0.406), \texttt{ast\_ema\_L5} (0.247).
+A distinctive finding for assists is that \texttt{is\_home} ranks
+fourth (0.093), ahead of opponent defensive context (0.089).
+This is consistent with the well-documented home-court advantage in
+playmaking: point guards and facilitators typically produce more assists
+at home, where crowd noise may disrupt opposing defensive communication
+and where travel fatigue does not impair decision-making.
+Opponent assists allowed (\texttt{opp\_ast\_allowed\_L10} = 0.089)
+ranks fifth, suggesting that teams that allow high assist totals to
+opponents provide a favourable matchup for playmakers.
+
+\paragraph{Cross-stat summary.}
+In all three models, the top-3 features follow the same hierarchy:
+$L_{10}$ rolling mean $>$ season expanding mean $>$ EMA$_5$.
+The consistent third-place ranking of EMA$_5$ --- despite it being
+derived from a shorter window than $L_{10}$ --- confirms that
+exponentially decayed recent momentum carries information orthogonal
+to the simple 10-game average, justifying its inclusion as a
+non-redundant feature.
+
+\subsection{Betting Simulation}
+
+Table~\ref{tab:betting} reports simulated ROI at representative edge
+thresholds across all three synthetic line definitions.
+Full results across all thresholds appear in Appendix~\ref{app:betting}.
+
+\begin{table}[H]
+\centering
+\caption{Simulated ROI by statistic, line type, and edge threshold
+         ($N$ = number of bets; break-even ROI = $-0.048$ at $-110$ juice).
+         Only thresholds with $N \geq 1{,}000$ reported.}
+\label{tab:betting}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Stat} & \textbf{Line} & \textbf{Threshold} & \textbf{N bets} & \textbf{ROI} \\
+\midrule
+\multirow{3}{*}{Points}
+  & $L_{10}$  & 1.0 & 42,918 & $+0.143$ \\
+  & EMA$_5$   & 1.0 & 55,410 & $+0.198$ \\
+  & LinReg    & 1.0 & 17,685 & $+0.131$ \\
+\midrule
+\multirow{3}{*}{Rebounds}
+  & $L_{10}$  & 1.0 &  6,416 & $+0.250$ \\
+  & EMA$_5$   & 1.0 & 17,559 & $+0.342$ \\
+  & LinReg    & 1.0 &  1,525 & $+0.208$ \\
+\midrule
+\multirow{3}{*}{Assists}
+  & $L_{10}$  & 1.0 &  2,552 & $+0.295$ \\
+  & EMA$_5$   & 1.0 &  7,985 & $+0.339$ \\
+  & LinReg    & 1.0 &    793 & $+0.156$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/pnl_curve_pts_l10.png}
+        \caption{Points (L10 line)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/pnl_curve_reb_l10.png}
+        \caption{Rebounds (L10 line)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/pnl_curve_ast_l10.png}
+        \caption{Assists (L10 line)}
+    \end{subfigure}
+    \caption{Cumulative flat-unit P\&L over time (2021--2024) against the
+             $L_{10}$ synthetic line at a 1-unit edge threshold. Each point
+             represents a single bet outcome; shading indicates profit (green)
+             and loss (red) regions.}
+    \label{fig:pnl}
+\end{figure}
+
+Against the $L_{10}$ line, ROI rises monotonically with threshold for all
+three statistics: from $+6.3\%$ (all bets, $\tau=0$) to $+30.0\%$
+($\tau=2.5$, $N=6{,}128$) for points.
+This pattern is consistent with the model's edge being concentrated in
+cases where its prediction diverges substantially from the naive recency
+estimate --- precisely the situations where the model's richer feature set
+provides the most additional information.
+
+The EMA$_5$ line systematically yields higher ROI than the $L_{10}$ line
+at the same threshold across all statistics.
+This should not be interpreted as evidence that EMA$_5$ is a weaker market
+proxy; rather, EMA$_5$'s shorter effective window introduces additional
+noise, creating more observations where XGBoost and the EMA$_5$ line disagree
+by more than $\tau$.
+Many of those disagreements reflect the line being wrong (over-reacting to
+a single game) rather than XGBoost being right.
+
+The most conservative and epistemically meaningful comparison is against the
+linear regression line.
+Both models share identical feature sets, eliminating information asymmetry.
+XGBoost achieves +13.1\% ROI on points ($N=17{,}685$), +20.8\% on rebounds
+($N=1{,}525$), and +15.6\% on assists ($N=793$) at a threshold of 1.0.
+Win rates of 59.3\%, 63.3\%, and 60.5\% respectively --- all well above the
+52.38\% break-even --- confirm that the non-linear model consistently
+identifies cases where the linear model systematically under- or
+over-predicts, and that XGBoost's prediction is on the correct side of
+those deviations.
+The smaller sample sizes for rebounds and assists at this threshold warrant
+caution in interpretation; the rebound result in particular ($N=1{,}525$)
+has wider confidence intervals and should be replicated on additional data.
+
+% =============================================================
+\section{Limitations and Future Work}
+\label{sec:limits}
+% =============================================================
+
+\paragraph{Synthetic market lines.}
+All betting simulation results are relative to synthetically constructed
+lines rather than historical sportsbook closing lines.
+Real prop lines incorporate injury reports, lineup information, travel
+schedules, and sharp money movement --- factors absent from our model.
+The $L_{10}$, EMA$_5$, and linear regression lines are all computable
+from the same dataset and do not incorporate market microstructure.
+Evaluation against historical closing lines (e.g., via commercial odds
+data providers such as OddsJam or The Odds API) would yield more
+practically meaningful ROI estimates and is the most important
+direction for future validation.
+
+\paragraph{Injury and lineup data.}
+The model does not incorporate real-time roster information.
+When a star player is absent, the minutes and statistical distribution
+of teammates shifts substantially.
+Integrating lineup-adjusted features --- for example, estimated minutes
+shares from Vegas injury reports or projected starter availability ---
+is a known improvement opportunity in NBA prediction
+literature~\citep{chen2021hybrid}.
+
+\paragraph{Probability calibration.}
+The probability of exceeding the line is estimated via the normal CDF
+with the player's 10-game standard deviation as the dispersion parameter.
+This distributional assumption is not validated against empirical
+frequencies.
+Calibration plots and post-hoc methods such as Platt
+scaling~\citep{platt1999probabilistic} or isotonic regression are
+left as future work.
+
+\paragraph{Performance drift.}
+The slight upward trend in MAE across folds (fold 1: 4.770 points,
+fold 4: 4.859 points) suggests mild distribution shift over time.
+Techniques such as concept drift detection, time-decayed sample
+weighting, or season-specific normalisation may improve stability
+in future iterations.
+
+\paragraph{Historical era coverage.}
+The training data spans 2016--2024, but league play style continues
+to evolve.
+Models trained on all available historical data may be distorted by
+structural shifts in pace, three-point volume, and role specialisation
+between early and late seasons in this window.
+Restricting training to a shorter modern-era window or applying
+exponential time-decay to older observations is worth exploring.
+
+% =============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =============================================================
+
+We presented a gradient boosting regression pipeline for NBA player prop
+prediction that achieves consistent temporal generalization across four
+held-out seasons.
+Walk-forward cross-validation yields mean absolute errors of 4.84 points,
+1.97 rebounds, and 1.41 assists --- improving over a naive recency baseline
+by 4.5--5.0\%.
+The near-identical performance of XGBoost and random forest, combined with
+only modest gains over linear regression, indicates that the feature
+engineering --- particularly the rolling window structure, exponential
+moving average, season baseline, and opponent defensive context ---
+drives the majority of predictive improvement over a simple recency heuristic.
+
+SHAP analysis confirms a consistent three-feature hierarchy across all
+statistics: the 10-game rolling mean is dominant, followed by the season
+expanding mean and the EMA$_5$ momentum indicator.
+Opponent defensive context contributes meaningfully as the fourth-ranked
+feature for points and assists, validating its inclusion.
+A notable cross-stat finding is that home/away status is uniquely important
+for assists (rank 4), consistent with home-court advantages in playmaking
+but not in scoring or rebounding.
+
+A betting simulation against a linear regression synthetic line --- the most
+conservative benchmark, as both models share identical features --- produces
+positive ROI across all statistics (PTS: $+13.1\%$, REB: $+20.8\%$,
+AST: $+15.6\%$ at a 1-unit edge threshold), demonstrating that XGBoost's
+non-linear capacity captures structure a linear model does not.
+Win rates of 59--63\% against the linear baseline confirm directional
+accuracy that consistently exceeds the 52.38\% break-even threshold.
+
+These results position the model as a viable first-stage filter for prop
+betting analysis, with the understanding that practical deployment would
+require integration with real-time injury data, historical closing lines
+for honest ROI estimation, and probability calibration for reliable
+expected-value calculations.
+
+All code, trained models, and evaluation scripts are available at:
+\url{https://github.com/andomo3/nbaPropsPrediction}
+
+% =============================================================
+% Bibliography
+% =============================================================
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% =============================================================
+\appendix
+% =============================================================
+
+\section{Per-Fold MAE Results}
+\label{app:folds}
+
+\begin{table}[H]
+\centering
+\caption{MAE by model, statistic, and fold year.}
+\label{tab:fold_detail}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Stat} & \textbf{Fold} & \textbf{Naive L5} & \textbf{Linear} & \textbf{RF} & \textbf{XGBoost} \\
+\midrule
+\multirow{4}{*}{Points}
+  & 2021 & 4.999 & 4.805 & 4.767 & 4.770 \\
+  & 2022 & 5.092 & 4.904 & 4.856 & 4.853 \\
+  & 2023 & 5.124 & 4.928 & 4.873 & 4.877 \\
+  & 2024 & 5.113 & 4.899 & 4.859 & 4.859 \\
+\midrule
+\multirow{4}{*}{Rebounds}
+  & 2021 & 2.069 & 1.981 & 1.963 & 1.963 \\
+  & 2022 & 2.085 & 2.001 & 1.985 & 1.982 \\
+  & 2023 & 2.063 & 1.982 & 1.964 & 1.964 \\
+  & 2024 & 2.061 & 1.979 & 1.961 & 1.957 \\
+\midrule
+\multirow{4}{*}{Assists}
+  & 2021 & 1.431 & 1.381 & 1.368 & 1.366 \\
+  & 2022 & 1.467 & 1.419 & 1.403 & 1.403 \\
+  & 2023 & 1.488 & 1.439 & 1.424 & 1.423 \\
+  & 2024 & 1.528 & 1.475 & 1.458 & 1.458 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{SHAP Feature Importance Tables}
+\label{app:shap}
+
+\begin{table}[H]
+\centering
+\caption{Mean absolute SHAP values --- Points model (top 10 features,
+         2024 season hold-out, $N=5{,}000$ samples).}
+\label{tab:shap_pts}
+\begin{tabular}{lc}
+\toprule
+\textbf{Feature} & \textbf{Mean $|\text{SHAP}|$} \\
+\midrule
+pts\_L10              & 2.752 \\
+season\_avg\_pts      & 1.134 \\
+pts\_ema\_L5          & 1.100 \\
+opp\_pts\_allowed\_L10 & 0.346 \\
+min\_L5               & 0.313 \\
+fg\_pct\_L10          & 0.221 \\
+fg\_pct\_L5           & 0.212 \\
+is\_home              & 0.187 \\
+days\_rest            & 0.145 \\
+min\_L10              & 0.134 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Mean absolute SHAP values --- Rebounds model (top 10 features,
+         2024 season hold-out, $N=5{,}000$ samples).}
+\label{tab:shap_reb}
+\begin{tabular}{lc}
+\toprule
+\textbf{Feature} & \textbf{Mean $|\text{SHAP}|$} \\
+\midrule
+reb\_L10              & 0.931 \\
+season\_avg\_reb      & 0.643 \\
+reb\_ema\_L5          & 0.367 \\
+min\_L5               & 0.185 \\
+min\_L10              & 0.159 \\
+is\_home              & 0.105 \\
+opp\_reb\_allowed\_L10 & 0.075 \\
+days\_rest            & 0.063 \\
+reb\_L5               & 0.051 \\
+pts\_L5               & 0.038 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Mean absolute SHAP values --- Assists model (top 10 features,
+         2024 season hold-out, $N=5{,}000$ samples).}
+\label{tab:shap_ast}
+\begin{tabular}{lc}
+\toprule
+\textbf{Feature} & \textbf{Mean $|\text{SHAP}|$} \\
+\midrule
+ast\_L10              & 0.770 \\
+season\_avg\_ast      & 0.406 \\
+ast\_ema\_L5          & 0.247 \\
+is\_home              & 0.093 \\
+opp\_ast\_allowed\_L10 & 0.089 \\
+min\_L5               & 0.043 \\
+pts\_L5               & 0.032 \\
+ast\_L5               & 0.025 \\
+days\_rest            & 0.021 \\
+hot\_cold\_ast        & 0.009 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Full Betting Simulation Results}
+\label{app:betting}
+
+\begin{table}[H]
+\centering
+\caption{Flat-unit betting simulation: ROI and win rate by statistic,
+         synthetic line type, and edge threshold $\tau$.
+         Break-even win rate at $-110$ juice $= 52.38\%$.}
+\label{tab:betting_full}
+\small
+\begin{tabular}{llccccc}
+\toprule
+\textbf{Stat} & \textbf{Line} & \textbf{$\tau$} & \textbf{N bets} & \textbf{N won} & \textbf{Win rate} & \textbf{ROI} \\
+\midrule
+\multirow{6}{*}{Points}
+  & \multirow{6}{*}{$L_{10}$}
+    & 0.0 & 94,462 & 52,603 & 55.7\% & $+0.063$ \\
+  & & 0.5 & 67,242 & 38,690 & 57.5\% & $+0.099$ \\
+  & & 1.0 & 42,918 & 25,689 & 59.9\% & $+0.143$ \\
+  & & 1.5 & 24,677 & 15,390 & 62.4\% & $+0.191$ \\
+  & & 2.0 & 12,629 &  8,259 & 65.4\% & $+0.249$ \\
+  & & 2.5 &  6,128 &  4,172 & 68.1\% & $+0.300$ \\
+\midrule
+\multirow{6}{*}{Points}
+  & \multirow{6}{*}{EMA$_5$}
+    & 0.0 & 94,462 & 55,184 & 58.4\% & $+0.115$ \\
+  & & 0.5 & 74,117 & 44,755 & 60.4\% & $+0.153$ \\
+  & & 1.0 & 55,410 & 34,761 & 62.7\% & $+0.198$ \\
+  & & 1.5 & 39,394 & 25,628 & 65.1\% & $+0.242$ \\
+  & & 2.0 & 26,535 & 17,876 & 67.4\% & $+0.286$ \\
+  & & 2.5 & 17,087 & 11,889 & 69.6\% & $+0.328$ \\
+\midrule
+\multirow{6}{*}{Points}
+  & \multirow{6}{*}{LinReg}
+    & 0.0 & 94,462 & 51,077 & 54.1\% & $+0.032$ \\
+  & & 0.5 & 46,364 & 26,112 & 56.3\% & $+0.075$ \\
+  & & 1.0 & 17,685 & 10,480 & 59.3\% & $+0.131$ \\
+  & & 1.5 &  6,219 &  3,797 & 61.1\% & $+0.166$ \\
+  & & 2.0 &  2,308 &  1,454 & 63.0\% & $+0.203$ \\
+  & & 2.5 &    961 &    624 & 64.9\% & $+0.240$ \\
+\midrule
+\multirow{6}{*}{Rebounds}
+  & \multirow{6}{*}{$L_{10}$}
+    & 0.0 & 94,462 & 51,920 & 55.0\% & $+0.049$ \\
+  & & 0.5 & 29,471 & 17,738 & 60.2\% & $+0.149$ \\
+  & & 1.0 &  6,416 &  4,201 & 65.5\% & $+0.250$ \\
+  & & 1.5 &  1,488 &  1,030 & 69.2\% & $+0.322$ \\
+  & & 2.0 &    430 &    319 & 74.2\% & $+0.416$ \\
+  & & 2.5 &    125 &     92 & 73.6\% & $+0.405$ \\
+\midrule
+\multirow{6}{*}{Rebounds}
+  & \multirow{6}{*}{LinReg}
+    & 0.0 & 94,462 & 51,464 & 54.5\% & $+0.040$ \\
+  & & 0.5 & 13,083 &  7,772 & 59.4\% & $+0.134$ \\
+  & & 1.0 &  1,525 &    965 & 63.3\% & $+0.208$ \\
+  & & 1.5 &    262 &    180 & 68.7\% & $+0.312$ \\
+\midrule
+\multirow{6}{*}{Assists}
+  & \multirow{6}{*}{$L_{10}$}
+    & 0.0 & 94,462 & 50,695 & 53.7\% & $+0.025$ \\
+  & & 0.5 & 16,397 & 10,057 & 61.3\% & $+0.171$ \\
+  & & 1.0 &  2,552 &  1,731 & 67.8\% & $+0.295$ \\
+  & & 1.5 &    500 &    357 & 71.4\% & $+0.363$ \\
+\midrule
+\multirow{4}{*}{Assists}
+  & \multirow{4}{*}{LinReg}
+    & 0.0 & 94,462 & 51,998 & 55.1\% & $+0.051$ \\
+  & & 0.5 &  7,432 &  4,325 & 58.2\% & $+0.111$ \\
+  & & 1.0 &    793 &    480 & 60.5\% & $+0.156$ \\
+  & & 1.5 &     99 &     69 & 69.7\% & $+0.331$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
