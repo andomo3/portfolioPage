@@ -70,13 +70,13 @@
           </div>
         </div>
         <div class="hero-meta">
-          <div class="eyebrow">Engineer · Atlanta · Class of '27</div>
+          <div class="eyebrow">MLE · Data Engineering · Atlanta · GT '27 · CPT / F-1</div>
           <h1>Abba <span class="accent">Ndomo</span>.</h1>
           <p class="tagline">
-            ISyE + Operations Research at Georgia Tech. I turn messy data into decisions that move — <em>live ML systems, risk models, and data pipelines</em>. Currently building PerChance and freelancing as a data engineer.
+            ISyE + Operations Research at Georgia Tech. I build ML systems that ship and data pipelines that scale — <em>XGBoost models in live prediction APIs, Airflow DAGs processing real client data, quantitative tools on a $500K equity fund</em>.
           </p>
           <div class="hero-stats">
-            <div class="stat"><b>7</b><span>shipped projects</span></div>
+            <div class="stat"><b>6</b><span>shipped projects</span></div>
             <div class="stat"><b>2</b><span>internships</span></div>
             <div class="stat"><b>6</b><span>countries lived</span></div>
             <div class="stat"><b>5</b><span>languages</span></div>
@@ -84,14 +84,15 @@
           <div class="hero-cta">
             <button class="btn primary" onclick="window.__navigate &amp;&amp; window.__navigate('projects')">
               <span class="play-icon"></span>
-              Play projects
+              View projects
             </button>
-            <button class="btn ghost" onclick="window.__term &amp;&amp; window.__term.runCmd('shuffle')">
-              ⤭ Shuffle
-            </button>
-            <button class="btn ghost" onclick="window.__navigate &amp;&amp; window.__navigate('contact')">
-              Get in touch
-            </button>
+            <a class="btn ghost" href="resume.pdf" target="_blank">Resume ↗</a>
+            <a class="btn ghost" href="https://github.com/andomo3" target="_blank">GitHub ↗</a>
+            <a class="btn ghost" href="https://linkedin.com/in/AbbaNdomo" target="_blank">LinkedIn ↗</a>
+          </div>
+          <div class="hero-tools">
+            <div class="tools-row"><span class="tools-label">MLE</span><span>PyTorch · XGBoost · scikit-learn · Airflow · Redis · A/B Testing · SHAP · ARIMA</span></div>
+            <div class="tools-row"><span class="tools-label">DE</span><span>PySpark · DuckDB · Parquet · PostgreSQL · dbt · Airflow · Docker · REST APIs</span></div>
           </div>
         </div>
       </div>
@@ -103,7 +104,7 @@
           <div class="section-head" style="margin-top:0;">
             <div>
               <h2>Projects</h2>
-              <div class="sub">A selection from the catalog</div>
+              <div class="sub">Selected work</div>
             </div>
             <span class="more" onclick="window.__navigate &amp;&amp; window.__navigate('projects')">See all →</span>
           </div>
@@ -151,63 +152,34 @@
               <div class="role">Data Science Intern <span class="at">@ KPMG</span></div>
               <div class="when">Jun 2024 — Aug 2024</div>
             </div>
-            <div class="summary">Built backend services to improve enterprise document retrieval.</div>
+            <div class="summary">Built an NLP document classification pipeline serving 50+ enterprise auditors.</div>
             <ul>
-              <li>Built Python microservices for document ingestion and retrieval.</li>
-              <li>Improved ingestion monitoring with structured logging and alerts.</li>
-              <li>Partnered with QA to validate accuracy improvements.</li>
+              <li>Reduced document classification latency from 45s to 8s by replacing an O(n²) matching loop with an O(n+m) hash-join — a pure algorithmic fix, no infra changes.</li>
+              <li>Reached 95% precision on 10,000+ documents/month; built a statistical validation framework with 50+ automated distributional checks to catch label noise before it reached production.</li>
+              <li>Designed an A/B testing framework with bootstrapped confidence intervals and multiple-comparison corrections to govern future model updates.</li>
             </ul>
             <div class="stack">
               <span class="tag">Python</span>
+              <span class="tag">NLP</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag">A/B Testing</span>
               <span class="tag">CI/CD</span>
-              <span class="tag">Microservices</span>
             </div>
           </article>
 
           <article class="exp-card">
             <div class="head">
-              <div class="role">Quantitative Analyst Mentee <span class="at">@ Georgia Tech</span></div>
+              <div class="role">Quantitative Analyst <span class="at">@ Georgia Tech Student Fund (GTSF)</span></div>
               <div class="when">Jan 2025 — May 2025</div>
             </div>
-            <div class="summary">Built an automated equity screener and backtesting workflow.</div>
+            <div class="summary">Built quantitative tools for a $500K live student-managed equity fund.</div>
             <ul>
-              <li>Automated equity screening in Python with pandas and yfinance.</li>
-              <li>Created reusable factor backtests with clear reporting.</li>
-              <li>Documented workflows for future cohorts.</li>
+              <li>Built a Bloomberg Terminal screener that tripled coverage from 50 to 120 tickers, expanding the investable universe the team could evaluate each week.</li>
+              <li>Ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks; simulations identified 8% downside risk that directly shaped the fund's hedging position.</li>
+              <li>Validated sector-rotation strategies using ARIMA time-series models; first experience where a model error had an immediate dollar cost.</li>
             </ul>
             <div class="stack">
-              <span class="tag">Python</span><span class="tag">pandas</span><span class="tag">yfinance</span><span class="tag">Jupyter</span>
-            </div>
-          </article>
-
-          <article class="exp-card">
-            <div class="head">
-              <div class="role">DEI Committee Chair <span class="at">@ Georgia Tech</span></div>
-              <div class="when">Jan 2025 — Present</div>
-            </div>
-            <div class="summary">Led programming and coordination for student DEI initiatives.</div>
-            <ul>
-              <li>Designed event architecture and speaker series programming.</li>
-              <li>Coordinated cross-functional volunteers and logistics.</li>
-              <li>Built feedback loops to improve event attendance.</li>
-            </ul>
-            <div class="stack">
-              <span class="tag">Leadership</span><span class="tag">Events</span><span class="tag">Programming</span>
-            </div>
-          </article>
-
-          <article class="exp-card">
-            <div class="head">
-              <div class="role">Housing Office Assistant <span class="at">@ Georgia Tech</span></div>
-              <div class="when">Aug 2024 — Present</div>
-            </div>
-            <div class="summary">Supported residents and streamlined housing operations.</div>
-            <ul>
-              <li>Built resident support workflows and FAQs for faster issue resolution.</li>
-              <li>Managed inventory and event logistics for community programming.</li>
-            </ul>
-            <div class="stack">
-              <span class="tag">Support</span><span class="tag">Operations</span>
+              <span class="tag">Python</span><span class="tag">ARIMA</span><span class="tag">Monte Carlo</span><span class="tag">Bloomberg</span><span class="tag">NumPy</span>
             </div>
           </article>
         </div>
@@ -369,64 +341,38 @@
 
         <div class="contact-grid">
           <div class="card">
-            <h3>Send a transmission</h3>
-            <h2 style="margin-bottom: 12px;">Let's get in touch.</h2>
-            <p style="color: var(--fg-2); margin: 0 0 18px;">I respond fastest to email. The form pipes straight into my inbox.</p>
+            <h3>Get in touch</h3>
+            <h2 style="margin-bottom: 8px;">Let's work together.</h2>
+            <p style="color: var(--fg-3); margin: 0 0 28px; font-size: 14px;">Open to MLE and data engineering roles — full-time, internship, or contract. Fastest response via email or LinkedIn.</p>
 
-            <form class="contact-form" onsubmit="event.preventDefault();">
-              <div class="field">
-                <label>Your name</label>
-                <input type="text" placeholder="e.g. Ada Lovelace" />
-              </div>
-              <div class="field">
-                <label>Your email</label>
-                <input type="email" placeholder="ada@analytical.engine" />
-              </div>
-              <div class="field">
-                <label>Subject</label>
-                <input type="text" placeholder="we should talk about ___" />
-              </div>
-              <div class="field">
-                <label>Message</label>
-                <textarea placeholder="Say something interesting. Extra credit if you include a probability claim."></textarea>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <button type="submit" class="btn primary">Send transmission</button>
-                <span style="color: var(--fg-4); font-size: 12px;">avg response ≈ <b style="color: var(--fg-3); font-weight: 500;">14h</b> · 95% CI [4h, 36h]</span>
-              </div>
-            </form>
+            <a class="qrlink" href="mailto:abbandomo@gmail.com">
+              <div class="glyph">@</div>
+              <div><b>Email</b><span class="small">abbandomo@gmail.com</span></div>
+            </a>
+            <a class="qrlink" target="_blank" rel="noopener" href="https://linkedin.com/in/AbbaNdomo">
+              <div class="glyph">in</div>
+              <div><b>LinkedIn</b><span class="small">/in/AbbaNdomo</span></div>
+            </a>
+            <a class="qrlink" target="_blank" rel="noopener" href="https://github.com/andomo3">
+              <div class="glyph">⎇</div>
+              <div><b>GitHub</b><span class="small">/andomo3</span></div>
+            </a>
+            <a class="qrlink" href="resume.pdf" target="_blank">
+              <div class="glyph">↗</div>
+              <div><b>Resume</b><span class="small">PDF · updated 2026</span></div>
+            </a>
           </div>
 
           <div>
             <div class="card">
-              <h3>Channels</h3>
-              <a class="qrlink" href="mailto:abbandomo@gmail.com">
-                <div class="glyph">@</div>
-                <div><b>Email</b><span class="small">abbandomo@gmail.com</span></div>
-              </a>
-              <a class="qrlink" href="tel:+14048195945">
-                <div class="glyph">☎</div>
-                <div><b>Phone</b><span class="small">+1 (404) 819-5945</span></div>
-              </a>
-              <a class="qrlink" target="_blank" rel="noopener" href="https://linkedin.com/in/AbbaNdomo">
-                <div class="glyph">in</div>
-                <div><b>LinkedIn</b><span class="small">/in/AbbaNdomo</span></div>
-              </a>
-              <a class="qrlink" target="_blank" rel="noopener" href="https://github.com/andomo3">
-                <div class="glyph">⎇</div>
-                <div><b>GitHub</b><span class="small">/andomo3</span></div>
-              </a>
-            </div>
-
-            <div class="card" style="margin-top: 18px;">
               <h3>Availability</h3>
               <pre class="code" style="margin: 0;"><span class="ln"> 1</span><span class="kw">export const</span> <span class="var">availability</span> = {
-<span class="ln"> 2</span>  <span class="fn">role</span>: <span class="str">'data analyst — summer 2025'</span>,
-<span class="ln"> 3</span>  <span class="fn">location</span>: [<span class="str">'atlanta'</span>, <span class="str">'remote'</span>, <span class="str">'on-site'</span>],
-<span class="ln"> 4</span>  <span class="fn">timezone</span>: <span class="str">'ET'</span>, <span class="com">// flexible ±5h</span>
-<span class="ln"> 5</span>  <span class="fn">interests</span>: [<span class="str">'quant'</span>, <span class="str">'ml infra'</span>, <span class="str">'analytics'</span>],
-<span class="ln"> 6</span>  <span class="fn">openTo</span>: { <span class="fn">coffee</span>: <span class="num">true</span>, <span class="fn">cold_email</span>: <span class="num">true</span> },
-<span class="ln"> 7</span>  <span class="fn">responds_in_hours</span>: <span class="num">14</span>,
+<span class="ln"> 2</span>  <span class="fn">role</span>: [<span class="str">'MLE'</span>, <span class="str">'data engineering'</span>],
+<span class="ln"> 3</span>  <span class="fn">visa</span>: <span class="str">'F-1 · CPT authorized'</span>,
+<span class="ln"> 4</span>  <span class="fn">start</span>: <span class="str">'Summer 2026'</span>,
+<span class="ln"> 5</span>  <span class="fn">location</span>: [<span class="str">'atlanta'</span>, <span class="str">'remote'</span>, <span class="str">'on-site'</span>],
+<span class="ln"> 6</span>  <span class="fn">timezone</span>: <span class="str">'ET'</span>, <span class="com">// flexible ±5h</span>
+<span class="ln"> 7</span>  <span class="fn">openTo</span>: { <span class="fn">coffee</span>: <span class="num">true</span>, <span class="fn">cold_email</span>: <span class="num">true</span> },
 <span class="ln"> 8</span>}</pre>
             </div>
           </div>
