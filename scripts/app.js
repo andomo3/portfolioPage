@@ -152,6 +152,9 @@
   function renderFileView(id) {
     const p = PROJECT_FILES.find(x => x.id === id);
     if (!p) return renderEmptyView();
+    const idx = PROJECT_FILES.indexOf(p);
+    const prev = PROJECT_FILES[idx - 1];
+    const next = PROJECT_FILES[idx + 1];
     return `
       <div class="project-detail">
         <div class="crumb">~/projects/${p.file}</div>
@@ -164,6 +167,10 @@
           ${p.stack.map(s => `<span class="tag">${s}</span>`).join('')}
         </div>
         <p>${p.body.replace(/\n\n/g, '</p><p>')}</p>
+        <div class="proj-nav">
+          ${prev ? `<button class="proj-nav-btn" onclick="window.__openTab('${prev.id}')">← ${prev.title.split('—')[0].trim()}</button>` : '<span></span>'}
+          ${next ? `<button class="proj-nav-btn" onclick="window.__openTab('${next.id}')">→ ${next.title.split('—')[0].trim()}</button>` : '<span></span>'}
+        </div>
       </div>
     `;
   }
@@ -229,8 +236,10 @@
   }
   window.__openTab = openTab;
 
-  // Open the first project by default (silent — boot flag prevents sync echo)
-  if (PROJECT_FILES[0]) openTab(PROJECT_FILES[0].id);
+  // Open all project tabs at boot so the full tab bar is populated.
+  // bootDone is still false here so terminal sync is suppressed.
+  PROJECT_FILES.forEach(p => openTab(p.id));
+  openTab(PROJECT_FILES[0].id); // make the first one active
   bootDone = true;
 
   // When the track changes (terminal, prev/next, shelf tile), navigate to

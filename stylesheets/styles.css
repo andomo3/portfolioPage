@@ -1251,6 +1251,37 @@ button { font-family: inherit; }
 .metric .v small { color: var(--fg-3); font-size: 12px; font-weight: 500; margin-left: 4px; }
 
 .project-detail p { color: var(--fg-2); }
+
+.proj-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  gap: 12px;
+}
+.proj-nav-btn {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--fg-2);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: 140ms;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 45%;
+}
+.proj-nav-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--fg);
+  border-color: var(--hairline-2);
+}
 .project-detail h3 {
   color: var(--fg);
   margin-top: 28px;
