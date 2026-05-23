@@ -92,6 +92,7 @@
     gap: 12px;
   }
   .header .nav-btns { display: none; }
+  .screen-label { display: none; }
 
   /* ── Mobile bottom tab bar ── */
   .mob-nav {

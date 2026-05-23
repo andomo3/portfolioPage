@@ -32,36 +32,38 @@
 
     <div class="sb-section">Library</div>
     <div class="sb-item active" data-nav="home">
-      <span class="icon">⌂</span><span>Home</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span><span>Home</span>
     </div>
     <div class="sb-item" data-nav="projects">
-      <span class="icon">♫</span><span>Projects</span><span class="count">6</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/></svg></span><span>Projects</span><span class="count">6</span>
     </div>
     <div class="sb-item" data-nav="about">
-      <span class="icon">◐</span><span>About</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><span>About</span>
     </div>
     <div class="sb-item" data-nav="contact">
-      <span class="icon">✉</span><span>Contact</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 8l9 6 9-6"/></svg></span><span>Contact</span>
     </div>
 
     <div class="sb-section">Connect</div>
     <a class="sb-item" href="resume.pdf" target="_blank">
-      <span class="icon">↗</span><span>Resume</span><span class="count">PDF</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 14h6M9 17h4"/></svg></span><span>Resume</span><span class="count">PDF</span>
     </a>
     <a class="sb-item" href="https://github.com/andomo3" target="_blank">
-      <span class="icon">⌥</span><span>GitHub</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.36 6.84 9.72.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.67.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9v2.81c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.59 17.52 2 12 2z"/></svg></span><span>GitHub</span>
     </a>
     <a class="sb-item" href="https://linkedin.com/in/AbbaNdomo" target="_blank">
-      <span class="icon">in</span><span>LinkedIn</span>
+      <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></span><span>LinkedIn</span>
     </a>
   </aside>
 
   <!-- ============== HEADER ============== -->
   <header class="header">
+    <div class="scroll-progress" id="scroll-progress"></div>
     <div class="nav-controls">
       <button class="nav-btn" title="Back" data-history="back">‹</button>
       <button class="nav-btn" title="Forward" data-history="forward">›</button>
     </div>
+    <div class="screen-label" id="screen-label">01 Home</div>
     <div class="right">
       <span class="pill"><span class="dot"></span> available · CPT · summer '26</span>
       <span style="color: var(--fg-4); font-size: 11.5px;" id="clock">--:--</span>
