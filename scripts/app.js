@@ -66,7 +66,7 @@
     document.querySelectorAll('.sb-item, .mob-tab, [data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === page));
     const screenLabel = document.getElementById('screen-label');
     if (screenLabel) screenLabel.textContent = target.dataset.screenLabel || '';
-    history.replaceState({}, '', '#/' + page);
+    history.replaceState({}, '', '#' + page);
     if (current === target) return;
     if (current) {
       current.classList.add('leaving');
@@ -146,7 +146,7 @@
   // Initial state once the terminal has booted
   setTimeout(refreshLike, 300);
   window.addEventListener('navigate', (e) => navigate(e.detail));
-  const hash = (location.hash || '').replace('#/', '');
+  const hash = (location.hash || '').replace('#', '');
   if (['home', 'projects', 'about', 'contact'].includes(hash)) navigate(hash);
 
   window.addEventListener('keydown', (e) => {
