@@ -1,14 +1,5 @@
 # Portfolio — Abba Ndomo
 
-Static site. No build step. Open `index.html` or serve the directory.
-
-## Local development
-
-```powershell
-python -m http.server 8000
-# → http://localhost:8000
-```
-
 ## Structure
 
 ```
@@ -28,26 +19,3 @@ data/
 .github/workflows/
   refresh-spotify.yml       # monthly cron to refresh Spotify JSON
 ```
-
-## Refreshing data
-
-**Spotify** (top artists on About page):
-```powershell
-python scripts/fetch-spotify.py --auth      # first time only — saves refresh token to .env
-python scripts/fetch-spotify.py             # subsequent runs
-```
-
-**GitHub** (commit heatmap on Home page):
-```powershell
-# optional: set GITHUB_TOKEN in .env to raise rate limit 60 → 5000/hr
-python scripts/fetch-github.py
-```
-
-## Deployment — GitHub Pages
-
-1. Push to `main` (or `master`) on a public GitHub repo.
-2. Settings → Pages → Source: **Deploy from a branch** → Branch: **main / (root)**.
-3. Site goes live at `https://<username>.github.io/<repo>` after ~1 min.
-4. Optional custom domain: add a `CNAME` file with the domain on one line, configure DNS.
-
-The `.nojekyll` file disables Jekyll processing so files/folders aren't filtered.
