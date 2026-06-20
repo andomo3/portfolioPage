@@ -7,7 +7,7 @@
 
   // ---------- Data ----------
   const TRACKS = [
-    { n: '01', title: 'PerChance — NBA Prop Prediction',      artist: 'Founder · Jan 2026',       album: 'live_at_100_users',     dur: '4:18', plays: '1.1M', stack: ['PyTorch','XGBoost','Django','React'] },
+    { n: '01', title: 'PerChance — NBA Props Intelligence',    artist: 'Founder · Jan 2026',       album: 'live_at_100_users',     dur: '4:18', plays: '1.1M', stack: ['XGBoost','CatBoost','Django','React'] },
     { n: '02', title: 'Altura — Renovation Cost Estimator',   artist: 'Data & ML Engineer',        album: 'hours_to_5_seconds',    dur: '3:55', plays: '847K', stack: ['PySpark','Airflow','DuckDB','Next.js'] },
     { n: '03', title: 'GTSF — Portfolio Risk Analysis',       artist: 'Quantitative Analyst',      album: 'live_500k_equity',      dur: '4:11', plays: '512K', stack: ['Python','Bloomberg','ARIMA','Monte Carlo'] },
     { n: '04', title: 'Document Intelligence System',         artist: 'Data Science Intern',       album: 'mumbai_audit_pipeline', dur: '3:42', plays: '673K', stack: ['Python','PostgreSQL','NLP'] },

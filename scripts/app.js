@@ -4,17 +4,17 @@
 
   const PROJECT_FILES = [
     {
-      id: '01', file: 'perchance.py', icon: '🏀', art: 'a1', title: 'PerChance — NBA Prop Prediction',
-      sub: 'Live prediction platform serving 100+ daily users across the NBA season.',
-      metrics: [['Daily Users', '100+'], ['Accuracy', '70%'], ['API Latency', '<200ms'], ['Training Data', '1.1M rows']],
-      stack: ['PyTorch', 'XGBoost', 'Django', 'React', 'Docker', 'Airflow', 'Redis'],
+      id: '01', file: 'perchance.py', icon: '🏀', art: 'a1', title: 'PerChance — NBA Props Intelligence',
+      sub: 'Open-source player analytics platform — behavioral profiling, edge calibration, and opponent exploitability for NBA props.',
+      metrics: [['Players Profiled', '450+'], ['Intelligence Views', '5'], ['API Latency', '<200ms'], ['Seasons Backtested', '3']],
+      stack: ['XGBoost', 'CatBoost', 'SHAP', 'Django', 'React', 'Airflow', 'Spark', 'Redis', 'Docker'],
       github: 'https://github.com/andomo3/nbaPropsPrediction',
       liveUrl: 'https://nba-props-prediction.vercel.app/',
       star: {
-        situation: 'Sportsbooks price NBA props using teams of analysts, proprietary injury feeds, and sharp money movement. A solo builder cannot match that information advantage — the only viable edge is model accuracy.',
-        task: 'Build a live prediction platform accurate enough to generate positive expected value against published lines, with low enough latency to be usable during the betting window before tip-off.',
-        action: 'Trained separate XGBoost regressors per stat category (points, rebounds, assists, etc.) on 1.1M player-game records, validated across four held-out seasons. Automated nightly retraining and feature ingestion via Airflow; served predictions through a Django REST API with Redis caching to absorb traffic spikes.',
-        result: '70% accuracy across 20 metrics — 15% above the naive baseline. Backtest against linear regression lines showed +13% ROI on points props. API latency held under 200ms under live traffic across the NBA season.'
+        situation: 'Sportsbooks and casual bettors both chase projections — a number vs. a line. The harder question nobody answers well is when a player becomes predictable and why: how performance shifts by rest, form, and matchup, and what the realistic floor and ceiling look like on a given night.',
+        task: 'Build an open-source analytics platform that produces full behavioral profiles per player — calibrated edge, floor/ceiling distributions, opponent exploitability, and a five-dimension fingerprint — served through a REST API and interactive frontend.',
+        action: 'Built a Django REST API backed by XGBoost and CatBoost regressors trained per player/stat with SHAP explainability. Airflow DAGs handle nightly NBA API and odds ingestion with Apache Spark for scale. Redis caches hot endpoints. A React + Vite frontend visualizes edge calibration by rest/form cross-tabs, p5–p95 output distributions, per-opponent splits, behavioral radar charts, and a composite predictability leaderboard scored by R²(50%) + inverse-CV(30%) + hit-rate-excess(20%). Dockerized end-to-end.',
+        result: 'Five distinct intelligence views per player per stat. Predictability leaderboard ranks all tracked players with cross-season comparison and rolling tier history. Self-hostable with Docker Compose — full pipeline from raw NBA data to interactive dashboard in a single compose up.'
       }
     },
     {
