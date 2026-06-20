@@ -7,43 +7,76 @@
       id: '01', file: 'perchance.py', icon: '🏀', art: 'a1', title: 'PerChance — NBA Prop Prediction',
       sub: 'Live prediction platform serving 100+ daily users across the NBA season.',
       metrics: [['Daily Users', '100+'], ['Accuracy', '70%'], ['API Latency', '<200ms'], ['Training Data', '1.1M rows']],
-      body: `Sportsbooks price props using teams of analysts with injury feeds, sharp money movement, and lineup projections. The only edge available to a solo builder is model accuracy. I trained separate XGBoost regressors on 1.1M player-game records, validated across four held-out seasons, and reached 70% accuracy across 20 metrics — 15% above the naive baseline. A conservative backtest against linear regression lines (same features, different model) showed +13% ROI on points props.\n\nThe system ingests NBA data nightly, retrains automatically via Airflow, and serves predictions through a Django REST API with Redis caching. Sub-200ms under live traffic.`,
-      stack: ['PyTorch', 'XGBoost', 'Django', 'React', 'Docker', 'Airflow', 'Redis']
+      stack: ['PyTorch', 'XGBoost', 'Django', 'React', 'Docker', 'Airflow', 'Redis'],
+      github: 'https://github.com/andomo3/nbaPropsPrediction',
+      liveUrl: 'https://nba-props-prediction.vercel.app/',
+      star: {
+        situation: 'Sportsbooks price NBA props using teams of analysts, proprietary injury feeds, and sharp money movement. A solo builder cannot match that information advantage — the only viable edge is model accuracy.',
+        task: 'Build a live prediction platform accurate enough to generate positive expected value against published lines, with low enough latency to be usable during the betting window before tip-off.',
+        action: 'Trained separate XGBoost regressors per stat category (points, rebounds, assists, etc.) on 1.1M player-game records, validated across four held-out seasons. Automated nightly retraining and feature ingestion via Airflow; served predictions through a Django REST API with Redis caching to absorb traffic spikes.',
+        result: '70% accuracy across 20 metrics — 15% above the naive baseline. Backtest against linear regression lines showed +13% ROI on points props. API latency held under 200ms under live traffic across the NBA season.'
+      }
     },
     {
       id: '02', file: 'altura_estimator.py', icon: '🏗️', art: 'a2', title: 'Altura — Renovation Cost Estimator',
       sub: 'Automated pricing platform for a 101-unit multi-family property operator.',
       metrics: [['Estimate Time', 'hours → 5s'], ['Categories', '13'], ['Units', '101'], ['Pipeline', 'Airflow DAG']],
-      body: `The client's pricing data wasn't missing — it was trapped in deeply nested Excel matrices that no off-the-shelf tool could parse. I built an ETL pipeline using PySpark and Airflow that extracts those matrices into structured Parquet tables, runs DuckDB validation, and feeds a Next.js interface where the client configures a project in four steps and gets a side-by-side estimate in under five seconds.\n\nWhat previously took most of a workday is now one click. The schema is PySpark-ready for multi-property expansion without code changes.`,
-      stack: ['PySpark', 'Airflow', 'DuckDB', 'Parquet', 'Next.js', 'Python']
+      stack: ['PySpark', 'Airflow', 'DuckDB', 'Parquet', 'Next.js', 'Python'],
+      liveUrl: 'https://altura-orcin.vercel.app/',
+      star: {
+        situation: 'A 101-unit property operator priced renovation work from deeply nested Excel matrices that no off-the-shelf tool could parse. Producing a single estimate required most of a workday of manual lookup and cross-referencing.',
+        task: 'Automate the extraction and pricing flow end-to-end so the client can configure a project and receive an itemized estimate in seconds, not hours.',
+        action: 'Built a PySpark + Airflow ETL pipeline to extract the Excel matrices into structured Parquet tables, added a DuckDB validation layer for data quality checks, and fed the output into a Next.js interface with a 4-step configuration flow.',
+        result: 'Estimate time dropped from hours to under 5 seconds. The schema is PySpark-ready for multi-property expansion with no code changes — the client can add properties without touching the pipeline.'
+      }
     },
     {
       id: '03', file: 'gtsf_portfolio.py', icon: '📈', art: 'a3', title: 'GTSF — Portfolio Risk Analysis',
       sub: 'Quantitative tools for a $500K live student-managed equity fund.',
       metrics: [['Portfolio', '$500K live'], ['VaR Reduction', '15%'], ['Coverage', '50 → 120 stocks'], ['Simulations', '10,000 runs']],
-      body: `The GTSF manages a $500K live equity fund where model outputs inform real trades. During the mentorship program, I sought to implement ARIMA models to validate sector-rotation strategies and ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks — the simulations identified 8% downside risk that directly shaped the fund's hedging position.\n\n I also built a Bloomberg Terminal screener that tripled coverage from 50 to 120 tickers because I wanted to change what the team could even consider for the portfolio. First time I worked with data where being wrong had an immediate dollar cost.`,
-      stack: ['Python', 'Bloomberg Terminal', 'ARIMA', 'NumPy', 'Statsmodels', 'Monte Carlo']
+      stack: ['Python', 'Bloomberg Terminal', 'ARIMA', 'NumPy', 'Statsmodels', 'Monte Carlo'],
+      star: {
+        situation: 'The GT Student Fund manages a $500K live equity portfolio where model outputs inform real allocation decisions. The team\'s screening process covered only 50 tickers with no quantitative macro stress-testing — decisions relied heavily on qualitative judgment.',
+        task: 'Expand the investment universe and build a quantitative risk framework that could surface tail risk before positions were sized.',
+        action: 'Built a Bloomberg Terminal screener to triple ticker coverage. Ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks. Implemented ARIMA models to validate sector-rotation strategies against historical regime data.',
+        result: 'Coverage grew from 50 to 120 tickers. Simulations surfaced 8% downside risk in the current allocation that directly shaped the fund\'s hedging position. Portfolio VaR reduced by 15%.'
+      }
     },
     {
       id: '04', file: 'doc_intelligence.py', icon: '📄', art: 'a4', title: 'Document Intelligence System',
       sub: 'Production classifier processing 10,000+ documents monthly for 50+ auditors.',
       metrics: [['Precision', '95%'], ['Latency', '45s → 8s'], ['Volume', '10K docs/mo'], ['Error Rate', '40% → 5%']],
-      body: `The latency problem turned out to be a single O(n²) loop in the document matching step — swapping it for an O(n+m) hash-join approach cut processing time from 45 seconds to 8 seconds without touching the model. The precision problem was mostly label noise; a statistical validation framework with 50+ automated distributional checks surfaced the bad training examples that were silently degrading performance.\n\nThe pipeline now serves 50+ auditors processing 10,000+ documents monthly at 95% precision. A/B testing framework with bootstrapped confidence intervals and multiple-comparison corrections governs any future model updates.`,
-      stack: ['Python', 'PostgreSQL', 'NLP', 'A/B Testing', 'PyTest']
+      stack: ['Python', 'PostgreSQL', 'NLP', 'A/B Testing', 'PyTest'],
+      star: {
+        situation: '50+ auditors were processing 10,000+ documents monthly through a classification pipeline running at 45 seconds per document with a 40% error rate — slow enough that auditors had abandoned real-time use and were batching overnight.',
+        task: 'Diagnose and fix both the latency and accuracy problems without overhauling the entire system or requiring model retraining from scratch.',
+        action: 'Profiled the pipeline end-to-end and found the bottleneck: an O(n²) loop in the document matching step. Swapped it for an O(n+m) hash-join — no model changes required. Built a statistical validation framework with 50+ distributional checks to surface label noise that was silently degrading classifier precision.',
+        result: 'Latency dropped from 45s to 8s. Precision reached 95%. Error rate fell from 40% to 5%. The pipeline now supports real-time use during audits, with an A/B testing framework governing future model updates.'
+      }
     },
     {
       id: '05', file: 'loan_default.py', icon: '💳', art: 'a5', title: 'Loan Default Risk Model',
       sub: 'ML classifier to flag high-risk loan applications before approval.',
       metrics: [['AUC', '0.80'], ['Recall', '82%'], ['Applications', '50,000+'], ['Decision Quality', '+10%']],
-      body: `The interesting part wasn't the model — XGBoost on 50,000+ applications is fairly standard. The hard part was that the lending team couldn't act on a black-box score. SHAP analysis revealed debt-to-income ratio was driving the majority of predictions, which allowed me to build a tiered risk framework they could explain to regulators and apply in approval meetings.\n\nI engineered 15 features from raw credit bureau data using CTE-based SQL ETL — payment velocity, credit utilization trends, account age. Applied SMOTE to address the 20:1 class imbalance before training. The framework improved approval decision quality by 10%.`,
-      stack: ['XGBoost', 'SHAP', 'SQL', 'Python', 'SMOTE']
+      stack: ['XGBoost', 'SHAP', 'SQL', 'Python', 'SMOTE'],
+      star: {
+        situation: 'A lending team needed a default risk model they could present to regulators. A black-box score — however accurate — wasn\'t deployable: auditors needed to explain every denial, and a model they couldn\'t interpret wouldn\'t make it past compliance review.',
+        task: 'Build an interpretable classifier on 50,000+ applications that outputs a tiered risk score auditors can defend in approval meetings and regulatory filings.',
+        action: 'Engineered 15 features from raw credit bureau data using CTE-based SQL ETL (payment velocity, utilization trends, account age). Applied SMOTE to correct a 20:1 class imbalance before training XGBoost. Used SHAP analysis to identify the dominant predictors and built a tiered risk framework around them.',
+        result: '0.80 AUC, 82% recall. SHAP revealed debt-to-income ratio as the primary driver — gave auditors a defensible, plain-language narrative. Approval decision quality improved 10% against the team\'s prior process.'
+      }
     },
     {
       id: '06', file: 'hospital_ops.sql', icon: '🏥', art: 'a6', title: 'Hospital Operations Database',
       sub: 'Redesigned data infrastructure for 50,000+ patient records.',
       metrics: [['Tables', '15'], ['Records', '50,000+'], ['Redundancy', '-20%'], ['Query Time', '3s → 200ms']],
-      body: `The hospital's data wasn't inaccessible — it was just slow and structurally inconsistent. Every useful query required bespoke one-off scripts because there was no foreign key discipline and no normalization. I redesigned the schema to 3NF across 15 tables, eliminating 20% redundancy.\n\nThe most impactful change was composite indexes on the bed utilization queries — the primary operations query dropped from 3 seconds to 200ms, making it fast enough to pull up in a morning standup rather than scheduled as an overnight report. Window functions handle the rolling utilization analysis.`,
-      stack: ['PostgreSQL', 'Python', 'CTEs', 'Window Functions']
+      stack: ['PostgreSQL', 'Python', 'CTEs', 'Window Functions'],
+      star: {
+        situation: 'A hospital operations team relied on bespoke one-off scripts for every query — no foreign key discipline, no normalization, structural inconsistencies across tables. The primary bed utilization report took 3 seconds to run and was treated as an overnight batch job.',
+        task: 'Redesign the schema for correctness and make the critical operations query fast enough for daily standups without a dedicated reporting infrastructure.',
+        action: 'Redesigned the database to 3NF across 15 tables, enforcing FK constraints and eliminating redundant columns. Added composite indexes targeted at the bed utilization query pattern. Rewrote the rolling utilization analysis using window functions to replace the bespoke scripts.',
+        result: 'Primary query time dropped from 3s to 200ms — fast enough to pull up in a morning standup. Data redundancy reduced 20%. The overnight report became a real-time operational tool.'
+      }
     },
   ];
 
@@ -218,6 +251,11 @@
     const idx = PROJECT_FILES.indexOf(p);
     const prev = PROJECT_FILES[idx - 1];
     const next = PROJECT_FILES[idx + 1];
+    const links = [
+      p.github  ? `<a class="proj-link" href="${p.github}" target="_blank" rel="noopener noreferrer"><span class="proj-link-icon">⌥</span>GitHub</a>` : '',
+      p.liveUrl ? `<a class="proj-link" href="${p.liveUrl}" target="_blank" rel="noopener noreferrer"><span class="proj-link-icon">↗</span>Live Site</a>` : '',
+    ].filter(Boolean).join('');
+    const star = p.star;
     return `
       <div class="project-detail">
         <div class="crumb">~/projects/${p.file}</div>
@@ -226,10 +264,30 @@
         <div class="meta-grid">
           ${p.metrics.map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom: 18px;">
-          ${p.stack.map(s => `<span class="tag">${s}</span>`).join('')}
+        <div class="proj-actions">
+          <div class="stack-row">${p.stack.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+          ${links ? `<div class="proj-links">${links}</div>` : ''}
         </div>
-        <p>${p.body.replace(/\n\n/g, '</p><p>')}</p>
+        ${star ? `
+        <div class="star-grid">
+          <div class="star-item">
+            <div class="star-label"><span class="star-letter">S</span>ituation</div>
+            <p>${star.situation}</p>
+          </div>
+          <div class="star-item">
+            <div class="star-label"><span class="star-letter">T</span>ask</div>
+            <p>${star.task}</p>
+          </div>
+          <div class="star-item">
+            <div class="star-label"><span class="star-letter">A</span>ction</div>
+            <p>${star.action}</p>
+          </div>
+          <div class="star-item">
+            <div class="star-label"><span class="star-letter">R</span>esult</div>
+            <p>${star.result}</p>
+          </div>
+        </div>
+        ` : ''}
         <div class="proj-nav">
           ${prev ? `<button class="proj-nav-btn" data-go="${prev.id}">← ${prev.title.split('—')[0].trim()}</button>` : '<span></span>'}
           ${next ? `<button class="proj-nav-btn" data-go="${next.id}">→ ${next.title.split('—')[0].trim()}</button>` : '<span></span>'}
