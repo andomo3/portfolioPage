@@ -262,7 +262,7 @@
         <h1>${p.title}</h1>
         <div class="sub">${p.sub}</div>
         <div class="meta-grid">
-          ${p.metrics.map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+          ${p.metrics.map(([k, v]) => `<div class="metric"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('')}
         </div>
         <div class="proj-actions">
           <div class="stack-row">${p.stack.map(s => `<span class="tag">${s}</span>`).join('')}</div>
