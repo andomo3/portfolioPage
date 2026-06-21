@@ -4,42 +4,42 @@
 
   const PROJECT_FILES = [
     {
-      id: '01', file: 'perchance.py', icon: '🏀', art: 'a1', title: 'PerChance — NBA Props Intelligence',
+      id: '01', file: 'perchance.py', icon: '🏀', art: 'a1', title: 'PerChance',
       sub: 'Open-source player analytics platform — behavioral profiling, edge calibration, and opponent exploitability for NBA props.',
       metrics: [['Players Profiled', '450+'], ['Intelligence Views', '5'], ['API Latency', '<200ms'], ['Seasons Backtested', '3']],
       stack: ['XGBoost', 'CatBoost', 'SHAP', 'Django', 'React', 'Airflow', 'Spark', 'Redis', 'Docker'],
       github: 'https://github.com/andomo3/nbaPropsPrediction',
       liveUrl: 'https://nba-props-prediction.vercel.app/',
       star: {
-        situation: 'Sportsbooks and casual bettors both chase projections — a number vs. a line. The harder question nobody answers well is when a player becomes predictable and why: how performance shifts by rest, form, and matchup, and what the realistic floor and ceiling look like on a given night.',
-        task: 'Build an open-source analytics platform that produces full behavioral profiles per player — calibrated edge, floor/ceiling distributions, opponent exploitability, and a five-dimension fingerprint — served through a REST API and interactive frontend.',
-        action: 'Built a Django REST API backed by XGBoost and CatBoost regressors trained per player/stat with SHAP explainability. Airflow DAGs handle nightly NBA API and odds ingestion with Apache Spark for scale. Redis caches hot endpoints. A React + Vite frontend visualizes edge calibration by rest/form cross-tabs, p5–p95 output distributions, per-opponent splits, behavioral radar charts, and a composite predictability leaderboard scored by R²(50%) + inverse-CV(30%) + hit-rate-excess(20%). Dockerized end-to-end.',
-        result: 'Five distinct intelligence views per player per stat. Predictability leaderboard ranks all tracked players with cross-season comparison and rolling tier history. Self-hostable with Docker Compose — full pipeline from raw NBA data to interactive dashboard in a single compose up.'
+        situation: 'Sportsbooks publish lines. Nobody tells you when a player is genuinely predictable — or why performance shifts by rest, form, and matchup.',
+        task: 'Build an open-source platform with full player behavioral profiles: calibrated edge, output distributions, opponent splits, and a predictability fingerprint.',
+        action: 'Built a Django REST API with XGBoost/CatBoost regressors per player/stat and SHAP explainability. Wired Airflow DAGs for nightly ingestion, Spark for scale, Redis for caching. Built a React frontend with five intelligence views and a composite predictability leaderboard.',
+        result: 'Five views per player per stat. Leaderboard ranks all tracked players across seasons. Self-hostable end-to-end with a single Docker Compose up.'
       }
     },
     {
-      id: '02', file: 'altura_estimator.py', icon: '🏗️', art: 'a2', title: 'Altura — Renovation Cost Estimator',
+      id: '02', file: 'altura_estimator.py', icon: '🏗️', art: 'a2', title: 'Altura',
       sub: 'Automated pricing platform for a 101-unit multi-family property operator.',
       metrics: [['Estimate Time', 'hours → 5s'], ['Categories', '13'], ['Units', '101'], ['Pipeline', 'Airflow DAG']],
       stack: ['PySpark', 'Airflow', 'DuckDB', 'Parquet', 'Next.js', 'Python'],
       liveUrl: 'https://altura-orcin.vercel.app/',
       star: {
-        situation: 'A 101-unit property operator priced renovation work from deeply nested Excel matrices that no off-the-shelf tool could parse. Producing a single estimate required most of a workday of manual lookup and cross-referencing.',
-        task: 'Automate the extraction and pricing flow end-to-end so the client can configure a project and receive an itemized estimate in seconds, not hours.',
-        action: 'Built a PySpark + Airflow ETL pipeline to extract the Excel matrices into structured Parquet tables, added a DuckDB validation layer for data quality checks, and fed the output into a Next.js interface with a 4-step configuration flow.',
-        result: 'Estimate time dropped from hours to under 5 seconds. The schema is PySpark-ready for multi-property expansion with no code changes — the client can add properties without touching the pipeline.'
+        situation: 'A 101-unit property operator priced renovations from nested Excel matrices no off-the-shelf tool could parse. One estimate took most of a workday.',
+        task: 'Automate the full extraction and pricing flow so the client receives an itemized estimate in seconds, not hours.',
+        action: 'Built a PySpark + Airflow ETL to extract Excel matrices into Parquet tables, added a DuckDB validation layer for data quality, and wired the output into a Next.js 4-step configuration interface.',
+        result: 'Estimate time dropped from hours to 5 seconds. Schema is PySpark-ready for multi-property expansion — no code changes required.'
       }
     },
     {
-      id: '03', file: 'gtsf_portfolio.py', icon: '📈', art: 'a3', title: 'GTSF — Portfolio Risk Analysis',
+      id: '03', file: 'gtsf_portfolio.py', icon: '📈', art: 'a3', title: 'GTSF',
       sub: 'Quantitative tools for a $500K live student-managed equity fund.',
       metrics: [['Portfolio', '$500K live'], ['VaR Reduction', '15%'], ['Coverage', '50 → 120 stocks'], ['Simulations', '10,000 runs']],
       stack: ['Python', 'Bloomberg Terminal', 'ARIMA', 'NumPy', 'Statsmodels', 'Monte Carlo'],
       star: {
-        situation: 'The GT Student Fund manages a $500K live equity portfolio where model outputs inform real allocation decisions. The team\'s screening process covered only 50 tickers with no quantitative macro stress-testing — decisions relied heavily on qualitative judgment.',
-        task: 'Expand the investment universe and build a quantitative risk framework that could surface tail risk before positions were sized.',
-        action: 'Built a Bloomberg Terminal screener to triple ticker coverage. Ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks. Implemented ARIMA models to validate sector-rotation strategies against historical regime data.',
-        result: 'Coverage grew from 50 to 120 tickers. Simulations surfaced 8% downside risk in the current allocation that directly shaped the fund\'s hedging position. Portfolio VaR reduced by 15%.'
+        situation: 'The GT Student Fund manages $500K in live equity with model outputs driving real allocations. Coverage sat at 50 tickers with no macro stress-testing.',
+        task: 'Triple the investable universe and build a quantitative risk framework to surface tail risk before positions are sized.',
+        action: 'Built a Bloomberg screener to expand coverage. Ran 10,000-iteration Monte Carlo simulations under macro shocks. Implemented ARIMA models to validate sector-rotation strategies against historical regime data.',
+        result: 'Coverage expanded from 50 to 120 tickers. Simulations surfaced 8% downside risk that directly shaped the fund\'s hedging position. Portfolio VaR reduced 15%.'
       }
     },
     {
@@ -48,10 +48,10 @@
       metrics: [['Precision', '95%'], ['Latency', '45s → 8s'], ['Volume', '10K docs/mo'], ['Error Rate', '40% → 5%']],
       stack: ['Python', 'PostgreSQL', 'NLP', 'A/B Testing', 'PyTest'],
       star: {
-        situation: '50+ auditors were processing 10,000+ documents monthly through a classification pipeline running at 45 seconds per document with a 40% error rate — slow enough that auditors had abandoned real-time use and were batching overnight.',
-        task: 'Diagnose and fix both the latency and accuracy problems without overhauling the entire system or requiring model retraining from scratch.',
-        action: 'Profiled the pipeline end-to-end and found the bottleneck: an O(n²) loop in the document matching step. Swapped it for an O(n+m) hash-join — no model changes required. Built a statistical validation framework with 50+ distributional checks to surface label noise that was silently degrading classifier precision.',
-        result: 'Latency dropped from 45s to 8s. Precision reached 95%. Error rate fell from 40% to 5%. The pipeline now supports real-time use during audits, with an A/B testing framework governing future model updates.'
+        situation: '50+ auditors processed 10,000+ documents monthly through a pipeline running at 45s per doc with a 40% error rate. Real-time use had been abandoned.',
+        task: 'Fix latency and accuracy without retraining the model or rebuilding the infrastructure.',
+        action: 'Profiled the pipeline, identified an O(n²) matching loop, and swapped it for an O(n+m) hash-join — no model changes. Built a statistical validation framework with 50+ distributional checks to catch label noise upstream.',
+        result: 'Latency cut from 45s to 8s. Precision hit 95%. Error rate fell from 40% to 5%. The pipeline now supports real-time use during live audits.'
       }
     },
     {
@@ -60,10 +60,10 @@
       metrics: [['AUC', '0.80'], ['Recall', '82%'], ['Applications', '50,000+'], ['Decision Quality', '+10%']],
       stack: ['XGBoost', 'SHAP', 'SQL', 'Python', 'SMOTE'],
       star: {
-        situation: 'A lending team needed a default risk model they could present to regulators. A black-box score — however accurate — wasn\'t deployable: auditors needed to explain every denial, and a model they couldn\'t interpret wouldn\'t make it past compliance review.',
-        task: 'Build an interpretable classifier on 50,000+ applications that outputs a tiered risk score auditors can defend in approval meetings and regulatory filings.',
-        action: 'Engineered 15 features from raw credit bureau data using CTE-based SQL ETL (payment velocity, utilization trends, account age). Applied SMOTE to correct a 20:1 class imbalance before training XGBoost. Used SHAP analysis to identify the dominant predictors and built a tiered risk framework around them.',
-        result: '0.80 AUC, 82% recall. SHAP revealed debt-to-income ratio as the primary driver — gave auditors a defensible, plain-language narrative. Approval decision quality improved 10% against the team\'s prior process.'
+        situation: 'A lending team needed a regulatory-grade risk model. Black-box scores weren\'t deployable — auditors had to explain every denial in plain language.',
+        task: 'Build an interpretable classifier on 50,000+ applications with a tiered risk score auditors can defend to regulators.',
+        action: 'Engineered 15 features from credit bureau data via CTE-based SQL ETL. Applied SMOTE to fix a 20:1 class imbalance, trained XGBoost, and used SHAP to identify dominant predictors and build the tiered risk framework.',
+        result: '0.80 AUC, 82% recall. SHAP surfaced debt-to-income ratio as the primary driver — gave auditors a defensible narrative. Decision quality improved 10%.'
       }
     },
     {
@@ -72,10 +72,10 @@
       metrics: [['Tables', '15'], ['Records', '50,000+'], ['Redundancy', '-20%'], ['Query Time', '3s → 200ms']],
       stack: ['PostgreSQL', 'Python', 'CTEs', 'Window Functions'],
       star: {
-        situation: 'A hospital operations team relied on bespoke one-off scripts for every query — no foreign key discipline, no normalization, structural inconsistencies across tables. The primary bed utilization report took 3 seconds to run and was treated as an overnight batch job.',
-        task: 'Redesign the schema for correctness and make the critical operations query fast enough for daily standups without a dedicated reporting infrastructure.',
-        action: 'Redesigned the database to 3NF across 15 tables, enforcing FK constraints and eliminating redundant columns. Added composite indexes targeted at the bed utilization query pattern. Rewrote the rolling utilization analysis using window functions to replace the bespoke scripts.',
-        result: 'Primary query time dropped from 3s to 200ms — fast enough to pull up in a morning standup. Data redundancy reduced 20%. The overnight report became a real-time operational tool.'
+        situation: 'A hospital operations team ran every query through bespoke scripts on an unnormalized schema. The primary bed utilization report took 3 seconds — treated as overnight batch.',
+        task: 'Redesign the schema for correctness and make the critical utilization query fast enough for morning standups.',
+        action: 'Redesigned to 3NF across 15 tables with FK enforcement and composite indexes targeting the utilization query. Rewrote rolling analysis using window functions to replace all bespoke scripts.',
+        result: 'Query time dropped from 3s to 200ms. Data redundancy cut 20%. The overnight batch report became a real-time operational tool.'
       }
     },
   ];
@@ -235,7 +235,6 @@
     });
   }
 
-  const tabs = document.getElementById('ide-tabs');
   const content = document.getElementById('ide-content');
 
   function renderEmptyView() {
@@ -255,7 +254,7 @@
     const prev = PROJECT_FILES[idx - 1];
     const next = PROJECT_FILES[idx + 1];
     const links = [
-      p.github  ? `<a class="proj-link" href="${p.github}" target="_blank" rel="noopener noreferrer"><span class="proj-link-icon">⌥</span>GitHub</a>` : '',
+      p.github ? `<a class="proj-link" href="${p.github}" target="_blank" rel="noopener noreferrer"><span class="proj-link-icon">⌥</span>GitHub</a>` : '',
       p.liveUrl ? `<a class="proj-link" href="${p.liveUrl}" target="_blank" rel="noopener noreferrer"><span class="proj-link-icon">↗</span>Live Site</a>` : '',
     ].filter(Boolean).join('');
     const star = p.star;
@@ -264,9 +263,6 @@
         <div class="crumb">~/projects/${p.file}</div>
         <h1>${p.title}</h1>
         <div class="sub">${p.sub}</div>
-        <div class="meta-grid">
-          ${p.metrics.map(([k, v]) => `<div class="metric"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('')}
-        </div>
         <div class="proj-actions">
           <div class="stack-row">${p.stack.map(s => `<span class="tag">${s}</span>`).join('')}</div>
           ${links ? `<div class="proj-links">${links}</div>` : ''}
@@ -299,62 +295,22 @@
     `;
   }
 
-  function closeTab(id) {
-    if (!tabs || !content) return;
-    const tab = tabs.querySelector(`.ide-tab[data-tab="${id}"]`);
-    if (!tab) return;
-    const wasActive = tab.classList.contains('active');
-    const remaining = Array.from(tabs.querySelectorAll('.ide-tab'));
-    const idx = remaining.indexOf(tab);
-    tab.remove();
-    if (tree) {
-      const t = tree.querySelector(`.ide-item[data-tab="${id}"]`);
-      if (t) t.classList.remove('active');
-    }
-    const left = tabs.querySelectorAll('.ide-tab');
-    if (left.length === 0) {
-      content.innerHTML = renderEmptyView();
-      return;
-    }
-    if (wasActive) {
-      const nextTab = left[Math.min(idx, left.length - 1)];
-      if (nextTab) openTab(nextTab.dataset.tab);
-    }
-  }
-
-  let bootDone = false;
   let syncingFromTab = false;
   let syncingFromTerm = false;
 
   function openTab(id) {
-    if (!tabs || !content) return;
-    let tab = tabs.querySelector(`.ide-tab[data-tab="${id}"]`);
-    if (!tab) {
-      const p = PROJECT_FILES.find(x => x.id === id);
-      if (!p) return;
-      tab = document.createElement('div');
-      tab.className = 'ide-tab';
-      tab.dataset.tab = id;
-      tab.innerHTML = `<span>${p.icon}</span> ${p.file} <span class="x" data-close="${id}">×</span>`;
-      tab.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('x')) {
-          e.stopPropagation();
-          closeTab(id);
-          return;
-        }
-        openTab(id);
-      });
-      tabs.appendChild(tab);
-    }
-    tabs.querySelectorAll('.ide-tab').forEach(t => t.classList.toggle('active', t === tab));
+    if (!content) return;
+    const p = PROJECT_FILES.find(x => x.id === id);
+    if (!p) return;
     if (tree) tree.querySelectorAll('.ide-item').forEach(t => t.classList.toggle('active', t.dataset.tab === id));
     content.innerHTML = renderFileView(id);
+    content.style.animation = 'none';
+    content.offsetHeight;
+    content.style.animation = '';
     content.querySelectorAll('[data-go]').forEach(btn => {
       btn.addEventListener('click', () => openTab(btn.dataset.go));
     });
-
-    // Sync the player to the open tab (suppressed during boot and re-entrant calls)
-    if (bootDone && !syncingFromTerm) {
+    if (!syncingFromTerm) {
       syncingFromTab = true;
       const n = parseInt(id, 10);
       if (window.__term) window.__term.runCmd('play ' + n);
@@ -363,11 +319,7 @@
   }
   window.__openTab = openTab;
 
-  // Open all project tabs at boot so the full tab bar is populated.
-  // bootDone is still false here so terminal sync is suppressed.
-  PROJECT_FILES.forEach(p => openTab(p.id));
-  openTab(PROJECT_FILES[0].id); // make the first one active
-  bootDone = true;
+  openTab(PROJECT_FILES[0].id);
   // Sync the player bar to the initially-active project so the IDE
   // and the player bar match on first render — independent of the
   // terminal intro timing.
@@ -557,7 +509,7 @@
     const t = PROJECTS[idx];
     if (!t) return;
     if (npTitle) npTitle.textContent = t.title;
-    if (npArtist) npArtist.textContent = `${t.artist} · ${t.album}`;
+    if (npArtist) npArtist.textContent = t.artist;
     const pf = PROJECT_FILES.find(f => parseInt(f.id, 10) === idx + 1);
     if (npCoverIcon && pf) npCoverIcon.textContent = pf.icon;
     const [m, s] = t.dur.split(':').map(Number);

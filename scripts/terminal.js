@@ -7,12 +7,12 @@
 
   // ---------- Data ----------
   const TRACKS = [
-    { n: '01', title: 'PerChance — NBA Props Intelligence',    artist: 'Founder · Jan 2026',       album: 'live_at_100_users',     dur: '4:18', plays: '1.1M', stack: ['XGBoost','CatBoost','Django','React'] },
-    { n: '02', title: 'Altura — Renovation Cost Estimator',   artist: 'Data & ML Engineer',        album: 'hours_to_5_seconds',    dur: '3:55', plays: '847K', stack: ['PySpark','Airflow','DuckDB','Next.js'] },
-    { n: '03', title: 'GTSF — Portfolio Risk Analysis',       artist: 'Quantitative Analyst',      album: 'live_500k_equity',      dur: '4:11', plays: '512K', stack: ['Python','Bloomberg','ARIMA','Monte Carlo'] },
-    { n: '04', title: 'Document Intelligence System',         artist: 'Data Science Intern',       album: 'mumbai_audit_pipeline', dur: '3:42', plays: '673K', stack: ['Python','PostgreSQL','NLP'] },
-    { n: '05', title: 'Loan Default Risk Model',              artist: 'Credit Risk Models',        album: 'logit_xgb_shap',        dur: '4:36', plays: '512K', stack: ['XGBoost','SHAP','SQL'] },
-    { n: '06', title: 'Hospital Operations Database',         artist: 'Systems Design',            album: '3nf_50k_records',       dur: '3:28', plays: '198K', stack: ['PostgreSQL','Python','CTEs'] },
+    { n: '01', title: 'PerChance — NBA Props Intelligence',    artist: 'Founder',              dur: '4:18', plays: '1.1M', stack: ['XGBoost','CatBoost','Django','React'] },
+    { n: '02', title: 'Altura — Renovation Cost Estimator',   artist: 'Data & ML Engineer',   dur: '3:55', plays: '847K', stack: ['PySpark','Airflow','DuckDB','Next.js'] },
+    { n: '03', title: 'GTSF — Portfolio Risk Analysis',       artist: 'Quantitative Analyst', dur: '4:11', plays: '512K', stack: ['Python','Bloomberg','ARIMA','Monte Carlo'] },
+    { n: '04', title: 'Document Intelligence System',         artist: 'Data Science Intern',  dur: '3:42', plays: '673K', stack: ['Python','PostgreSQL','NLP'] },
+    { n: '05', title: 'Loan Default Risk Model',              artist: 'Credit Risk Analyst',  dur: '4:36', plays: '512K', stack: ['XGBoost','SHAP','SQL'] },
+    { n: '06', title: 'Hospital Operations Database',         artist: 'Systems Design',       dur: '3:28', plays: '198K', stack: ['PostgreSQL','Python','CTEs'] },
   ];
 
   const HELP = [
@@ -65,7 +65,7 @@
     const icon = playing
       ? `<span class="eq"><span></span><span></span><span></span><span></span></span>`
       : `<span style="color:var(--fg-muted)">▸</span>`;
-    return `<div class="np"><div class="icon">${icon}</div><div><div><span class="title">${t.title}</span> <span class="dim" style="color:var(--fg-muted)">— ${t.artist}</span></div><div style="color:var(--fg-muted);font-size:11.5px;">album: <span style="color:var(--fg-dim)">${t.album}</span> · stack: ${t.stack.join(' · ')}</div></div><div class="time">${t.dur}</div></div>`;
+    return `<div class="np"><div class="icon">${icon}</div><div><div><span class="title">${t.title}</span> <span class="dim" style="color:var(--fg-muted)">— ${t.artist}</span></div><div style="color:var(--fg-muted);font-size:11.5px;">stack: ${t.stack.join(' · ')}</div></div><div class="time">${t.dur}</div></div>`;
   }
 
   // ---------- Boot intro (animated) ----------

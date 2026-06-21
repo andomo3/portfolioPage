@@ -10,7 +10,7 @@
 <meta property="og:title" content="Abba Ndomo — Data & ML Engineer" />
 <meta property="og:description" content="Portfolio · Georgia Tech ISyE + OR '27 · building PerChance" />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="headshot.jpg" />
+<meta property="og:image" content="headshot.jpeg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,8 +19,19 @@
 <link rel="stylesheet" href="stylesheets/styles.css" />
 <link rel="stylesheet" href="stylesheets/enhancements.css" />
 <link rel="stylesheet" href="stylesheets/mobile.css" />
+<link rel="stylesheet" href="stylesheets/animations.css" />
 </head>
 <body>
+
+<!-- Loading screen -->
+<div id="loader">
+  <div class="loader-inner">
+    <div class="loader-line">
+      <span class="loader-word">Abba</span>
+      <span class="loader-word accent">Ndomo.</span>
+    </div>
+  </div>
+</div>
 
 <div class="app">
 
@@ -79,8 +90,7 @@
           <div class="hero-text">
             <div class="hero-eyebrow">MLE · Data Engineering · Atlanta · GT '27 · CPT / F-1</div>
             <h1 class="hero-name">Abba<br>Ndomo.</h1>
-            <p class="hero-tagline">ISyE + Operations Research at Georgia Tech. I build ML systems that ship and data pipelines that scale — XGBoost models in live prediction APIs, Airflow DAGs processing real client data, quantitative tools on a $500K equity fund.</p>
-            <div class="hero-stats-row">
+            <p class="hero-tagline">Georgia Tech ISyE — Operations Research track. I build ML systems and data pipelines that run in production. Quantitative foundations, engineering execution.</p>            <div class="hero-stats-row">
               <div class="hero-stat"><span class="hero-stat-n">6</span><span class="hero-stat-l">shipped projects</span></div>
               <div class="hero-stat"><span class="hero-stat-n">2</span><span class="hero-stat-l">internships</span></div>
               <div class="hero-stat"><span class="hero-stat-n">6</span><span class="hero-stat-l">countries lived</span></div>
@@ -93,7 +103,7 @@
             </div>
           </div>
           <div class="hero-photo-wrap">
-            <img class="hero-photo" src="headshot.jpg" alt="Abba Ndomo" />
+            <img class="hero-photo" src="headshot.jpeg" alt="Abba Ndomo" />
           </div>
         </div>
       </div>
@@ -149,38 +159,40 @@
 
         <div class="timeline">
           <article class="exp-card">
-            <div class="head">
-              <div class="role">Software Engineering Intern <span class="at">@ KPMG</span></div>
-              <div class="when">Jun 2024 — Aug 2024</div>
-            </div>
-            <div class="summary">Built an NLP document classification pipeline serving 50+ enterprise auditors.</div>
-            <ul>
-              <li>Reduced document classification latency from 45s to 8s by replacing an O(n²) matching loop with an O(n+m) hash-join — a pure algorithmic fix, no infra changes.</li>
-              <li>Reached 95% precision on 10,000+ documents/month; built a statistical validation framework with 50+ automated distributional checks to catch label noise before it reached production.</li>
-              <li>Designed an A/B testing framework with bootstrapped confidence intervals and multiple-comparison corrections to govern future model updates.</li>
-            </ul>
-            <div class="stack">
-              <span class="tag">Python</span>
-              <span class="tag">NLP</span>
-              <span class="tag">PostgreSQL</span>
-              <span class="tag">A/B Testing</span>
-              <span class="tag">CI/CD</span>
+            <div class="when">Jun 2024<br>Aug 2024</div>
+            <div class="exp-body">
+              <div class="role">Software Engineering Intern</div>
+              <div class="at">@ KPMG</div>
+              <div class="summary">Built an NLP document classification pipeline serving 50+ enterprise auditors.</div>
+              <ul>
+                <li>Reduced document classification latency from 45s to 8s by replacing an O(n²) matching loop with an O(n+m) hash-join — a pure algorithmic fix, no infra changes.</li>
+                <li>Reached 95% precision on 10,000+ documents/month; built a statistical validation framework with 50+ automated distributional checks to catch label noise before it reached production.</li>
+                <li>Designed an A/B testing framework with bootstrapped confidence intervals and multiple-comparison corrections to govern future model updates.</li>
+              </ul>
+              <div class="stack">
+                <span class="tag">Python</span>
+                <span class="tag">NLP</span>
+                <span class="tag">PostgreSQL</span>
+                <span class="tag">A/B Testing</span>
+                <span class="tag">CI/CD</span>
+              </div>
             </div>
           </article>
 
           <article class="exp-card">
-            <div class="head">
-              <div class="role">Quantitative Analyst <span class="at">@ Georgia Tech Student Fund (GTSF)</span></div>
-              <div class="when">Jan 2025 — May 2025</div>
-            </div>
-            <div class="summary">Built quantitative tools for a $500K live student-managed equity fund.</div>
-            <ul>
-              <li>Built a Bloomberg Terminal screener that tripled coverage from 50 to 120 tickers, expanding the investable universe the team could evaluate each week.</li>
-              <li>Ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks; simulations identified 8% downside risk that directly shaped the fund's hedging position.</li>
-              <li>Validated sector-rotation strategies using ARIMA time-series models; first experience where a model error had an immediate dollar cost.</li>
-            </ul>
-            <div class="stack">
-              <span class="tag">Python</span><span class="tag">ARIMA</span><span class="tag">Monte Carlo</span><span class="tag">Bloomberg</span><span class="tag">NumPy</span>
+            <div class="when">Jan 2025<br>May 2025</div>
+            <div class="exp-body">
+              <div class="role">Quantitative Analyst</div>
+              <div class="at">@ Georgia Tech Student Fund (GTSF)</div>
+              <div class="summary">Built quantitative tools for a $500K live student-managed equity fund.</div>
+              <ul>
+                <li>Built a Bloomberg Terminal screener that tripled coverage from 50 to 120 tickers, expanding the investable universe the team could evaluate each week.</li>
+                <li>Ran 10,000-iteration Monte Carlo simulations to stress-test the portfolio under macro shocks; simulations identified 8% downside risk that directly shaped the fund's hedging position.</li>
+                <li>Validated sector-rotation strategies using ARIMA time-series models; first experience where a model error had an immediate dollar cost.</li>
+              </ul>
+              <div class="stack">
+                <span class="tag">Python</span><span class="tag">ARIMA</span><span class="tag">Monte Carlo</span><span class="tag">Bloomberg</span><span class="tag">NumPy</span>
+              </div>
             </div>
           </article>
         </div>
@@ -234,19 +246,9 @@
             <div class="ide-folder"><span>▾</span> <span>📁</span> projects</div>
             <div class="ide-children" id="file-tree"></div>
 
-            <div class="ide-section">Filters</div>
-            <div class="ide-item"><span class="glyph">#</span><span>ml &amp; data</span><span style="margin-left:auto; color: var(--fg-4)">4</span></div>
-            <div class="ide-item"><span class="glyph">#</span><span>systems</span><span style="margin-left:auto; color: var(--fg-4)">2</span></div>
-            <div class="ide-item"><span class="glyph">#</span><span>stats</span><span style="margin-left:auto; color: var(--fg-4)">3</span></div>
-
-            <div class="ide-section">Git</div>
-            <div class="ide-item"><span class="glyph">⎇</span><span>main</span></div>
-            <div class="ide-item"><span class="glyph">●</span><span>2 modified</span></div>
-            <div class="ide-item"><span class="glyph">+</span><span>7 untracked</span></div>
           </aside>
 
           <div class="ide-main">
-            <div class="ide-tabs" id="ide-tabs"></div>
             <div class="ide-content" id="ide-content"></div>
           </div>
         </div>
@@ -319,7 +321,7 @@
         <div class="section-head" style="margin-top: 8px;">
           <div>
             <h2>Contact</h2>
-            <div class="sub">ssh abba@portfolio</div>
+            <!-- <div class="sub">ssh abba@portfolio</div> -->
           </div>
         </div>
 
@@ -360,10 +362,9 @@
   <!-- ============== PLAYER BAR ============== -->
   <footer class="player">
     <div class="player-left">
-      <div class="cover"><span class="cover-icon-np">🏀</span></div>
       <div class="meta">
-        <div class="t" id="np-title">PerChance — NBA Props Intelligence</div>
-        <div class="s" id="np-artist">Founder · Jan 2026 · live_at_100_users</div>
+        <div class="t" id="np-title">PerChance</div>
+        <div class="s" id="np-artist">Founder</div>
       </div>
       <button class="like" id="np-like" title="Like this track">♡</button>
     </div>
@@ -412,6 +413,7 @@
 <script src="scripts/terminal.js"></script>
 <script src="scripts/app.js"></script>
 <script src="scripts/enhancements.js"></script>
+<script src="scripts/animations.js"></script>
 
 </body>
 </html>

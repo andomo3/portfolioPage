@@ -226,8 +226,9 @@
   .proj-actions { flex-direction: column; align-items: flex-start; }
 
   /* ── Experience timeline ── */
-  .timeline { padding-left: 20px; }
-  .exp-card { padding: 14px 16px; }
+  .exp-card { grid-template-columns: 1fr; gap: 4px; padding: 24px 0; }
+  .exp-card .when { text-align: left; padding-top: 0; }
+  .exp-card .role { font-size: 15px; }
 
   /* ── About / Contact grids ── */
   .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 16px; }

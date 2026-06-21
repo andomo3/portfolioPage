@@ -863,47 +863,46 @@ button { font-family: inherit; }
 
 /* ---------- Timeline ---------- */
 .timeline {
-  position: relative;
-  padding-left: 36px;
-}
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 11px;
-  top: 10px;
-  bottom: 10px;
-  width: 2px;
-  background: linear-gradient(180deg, var(--p1), var(--p3));
-  opacity: 0.5;
+  display: flex;
+  flex-direction: column;
 }
 .exp-card {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-md);
-  padding: 20px 24px;
-  margin-bottom: 14px;
-  transition: 200ms;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 0 48px;
+  padding: 36px 0;
+  border-top: 1px solid var(--hairline);
 }
-.exp-card:hover { transform: translateY(-2px); border-color: var(--hairline-2); }
-.exp-card::before {
-  content: "";
-  position: absolute;
-  left: -31px;
-  top: 26px;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 0 4px var(--bg);
+.exp-card:last-child { border-bottom: 1px solid var(--hairline); }
+.exp-card .when {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--fg-4);
+  line-height: 1.7;
+  padding-top: 4px;
 }
-.exp-card .head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.exp-card .role { font-size: 16px; font-weight: 600; color: var(--fg); letter-spacing: -0.01em; }
-.exp-card .role .at { color: var(--fg-3); font-weight: 500; }
-.exp-card .when { color: var(--fg-3); font-size: 12.5px; font-variant-numeric: tabular-nums; }
-.exp-card .summary { color: var(--fg-2); margin-top: 8px; }
-.exp-card ul { margin: 10px 0 0; padding-left: 18px; color: var(--fg-3); font-size: 13.5px; }
-.exp-card ul li::marker { color: var(--p3); }
+.exp-card .role {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.exp-card .at {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 3px;
+  margin-bottom: 10px;
+}
+.exp-card .summary { color: var(--fg-2); font-size: 13.5px; margin-bottom: 10px; }
+.exp-card ul { margin: 0; padding-left: 16px; color: var(--fg-3); font-size: 13px; line-height: 1.65; }
+.exp-card ul li { margin-bottom: 6px; }
+.exp-card ul li:last-child { margin-bottom: 0; }
+.exp-card ul li::marker { color: var(--accent); }
 .exp-card .stack { margin-top: 14px; display: flex; gap: 6px; flex-wrap: wrap; }
 
 .tag {

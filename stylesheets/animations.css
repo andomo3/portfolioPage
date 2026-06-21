@@ -1,0 +1,186 @@
+/* ============================================================
+   animations.css — loader, hero stagger, scroll reveal, nav
+   ============================================================ */
+
+/* ---------- Loading screen ---------- */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--dark-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+#loader.exit {
+  animation: loader-fade-out 0.45s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.loader-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.loader-line {
+  display: flex;
+  gap: 0.22em;
+  overflow: hidden;
+}
+.loader-word {
+  font-family: var(--display);
+  font-size: clamp(52px, 9vw, 100px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--dark-fg);
+  display: block;
+  transform: translateY(110%);
+  animation: word-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.loader-word.accent { color: var(--accent); }
+.loader-word:nth-child(1) { animation-delay: 0.05s; }
+.loader-word:nth-child(2) { animation-delay: 0.18s; }
+.loader-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--dark-fg-3);
+  transform: translateY(100%);
+  opacity: 0;
+  animation: sub-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+}
+
+@keyframes word-rise {
+  to { transform: translateY(0); }
+}
+@keyframes sub-rise {
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes loader-fade-out {
+  to { opacity: 0; }
+}
+
+/* ---------- Hero entrance stagger ---------- */
+.hero-eyebrow,
+.hero-name,
+.hero-tagline,
+.hero-stats-row,
+.hero-actions,
+.hero-photo-wrap {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-dark.hero-loaded .hero-eyebrow   { opacity: 1; transform: none; transition-delay: 0.05s; }
+.hero-dark.hero-loaded .hero-name      { opacity: 1; transform: none; transition-delay: 0.18s; }
+.hero-dark.hero-loaded .hero-tagline   { opacity: 1; transform: none; transition-delay: 0.30s; }
+.hero-dark.hero-loaded .hero-stats-row { opacity: 1; transform: none; transition-delay: 0.42s; }
+.hero-dark.hero-loaded .hero-actions   { opacity: 1; transform: none; transition-delay: 0.52s; }
+.hero-dark.hero-loaded .hero-photo-wrap { opacity: 1; transform: none; transition-delay: 0.24s; }
+
+/* ---------- Scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Nav hover underline ---------- */
+.nav-item {
+  position: relative;
+}
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 12px;
+  right: 12px;
+  height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 2px;
+}
+.nav-item:hover::after { transform: scaleX(1); }
+.nav-item.active::after { transform: scaleX(1); }
+
+/* ---------- Loader cursor blink ---------- */
+.loader-sub::after {
+  content: '▋';
+  color: var(--accent);
+  animation: cursor-blink 0.8s step-end infinite;
+  margin-left: 3px;
+}
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ---------- Hero photo float ---------- */
+.hero-photo {
+  animation: photo-float 5s ease-in-out infinite;
+}
+@keyframes photo-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ---------- IDE tab content fade ---------- */
+.ide-content {
+  animation: ide-content-in 0.2s ease both;
+}
+@keyframes ide-content-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Card hover lift ---------- */
+.card, .exp-card, .tile {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover, .exp-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+}
+.tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.10);
+}
+
+/* ---------- Proj-link button pop ---------- */
+.proj-link {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              background 140ms, color 140ms, border-color 140ms;
+}
+.proj-link:hover { transform: translateY(-2px); }
+
+/* ---------- Star item entrance (IDE) ---------- */
+.star-item {
+  animation: star-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.star-item:nth-child(1) { animation-delay: 0.05s; }
+.star-item:nth-child(2) { animation-delay: 0.12s; }
+.star-item:nth-child(3) { animation-delay: 0.19s; }
+.star-item:nth-child(4) { animation-delay: 0.26s; }
+@keyframes star-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Reduce motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #loader { display: none !important; }
+  .loader-word, .loader-sub { animation: none; transform: none; opacity: 1; }
+  .hero-eyebrow, .hero-name, .hero-tagline,
+  .hero-stats-row, .hero-actions, .hero-photo-wrap { opacity: 1; transform: none; transition: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
