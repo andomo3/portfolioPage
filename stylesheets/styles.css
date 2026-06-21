@@ -417,6 +417,21 @@ button { font-family: inherit; }
   image-rendering: pixelated;
 }
 
+/* Suppress pixel grid + art overlays when a real preview image is present */
+.tile .art.art--preview::before,
+.tile .art.art--preview::after { display: none; }
+
+/* Preview screenshot cover image */
+.tile .art .art-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  z-index: 0;
+}
+
 /* pixel grid overlay on all tiles */
 .tile .art::before {
   content: '';

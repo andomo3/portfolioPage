@@ -144,11 +144,11 @@
 }
 
 /* ---------- Card hover lift ---------- */
-.card, .exp-card, .tile {
+.card, .tile {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.card:hover, .exp-card:hover {
+.card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 28px rgba(0,0,0,0.08);
 }

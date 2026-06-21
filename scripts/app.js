@@ -10,6 +10,7 @@
       stack: ['XGBoost', 'CatBoost', 'SHAP', 'Django', 'React', 'Airflow', 'Spark', 'Redis', 'Docker'],
       github: 'https://github.com/andomo3/nbaPropsPrediction',
       liveUrl: 'https://nba-props-prediction.vercel.app/',
+      preview: 'perchance.png',
       star: {
         situation: 'Sportsbooks publish lines. Nobody tells you when a player is genuinely predictable — or why performance shifts by rest, form, and matchup.',
         task: 'Build an open-source platform with full player behavioral profiles: calibrated edge, output distributions, opponent splits, and a predictability fingerprint.',
@@ -23,6 +24,7 @@
       metrics: [['Estimate Time', 'hours → 5s'], ['Categories', '13'], ['Units', '101'], ['Pipeline', 'Airflow DAG']],
       stack: ['PySpark', 'Airflow', 'DuckDB', 'Parquet', 'Next.js', 'Python'],
       liveUrl: 'https://altura-orcin.vercel.app/',
+      preview: 'altura.png',
       star: {
         situation: 'A 101-unit property operator priced renovations from nested Excel matrices no off-the-shelf tool could parse. One estimate took most of a workday.',
         task: 'Automate the full extraction and pricing flow so the client receives an itemized estimate in seconds, not hours.',
@@ -207,8 +209,8 @@
     const el = document.createElement('div');
     el.className = 'tile';
     el.innerHTML = `
-      <div class="art" data-pid="${p.id}">
-        <div class="play-overlay"></div>
+      <div class="art${p.preview ? ' art--preview' : ''}" data-pid="${p.id}">
+        ${p.preview ? `<img class="art-preview" src="${p.preview}" alt="${p.title}" />` : '<div class="play-overlay"></div>'}
       </div>
       <div class="title">${p.title}</div>
       <div class="sub">${p.sub.split('.')[0]}</div>
