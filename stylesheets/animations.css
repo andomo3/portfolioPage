@@ -83,14 +83,15 @@
 /* ---------- Scroll reveal ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(36px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .reveal.visible {
   opacity: 1;
   transform: none;
 }
+
 
 /* ---------- Nav hover underline ---------- */
 .nav-item {
@@ -176,6 +177,26 @@
   to   { opacity: 1; transform: none; }
 }
 
+/* ---------- Typewriter cursor ---------- */
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: tw-blink 0.7s step-end infinite;
+}
+.tw-cursor-done {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+@keyframes tw-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 /* ---------- Reduce motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   #loader { display: none !important; }
@@ -183,4 +204,5 @@
   .hero-eyebrow, .hero-name, .hero-tagline,
   .hero-stats-row, .hero-actions, .hero-photo-wrap { opacity: 1; transform: none; transition: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .tw-cursor { animation: none; display: none; }
 }

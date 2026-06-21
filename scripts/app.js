@@ -325,8 +325,8 @@
   // terminal intro timing.
   window.dispatchEvent(new CustomEvent('np-update', { detail: { idx: 0 } }));
 
-  // When the track changes (terminal, prev/next, shelf tile), navigate to
-  // projects and open the matching IDE tab.
+  // When the track changes (terminal, prev/next, shelf tile), open the matching IDE tab.
+  // Only navigate to projects if the user is already there — don't auto-jump pages.
   window.addEventListener('np-update', (e) => {
     if (syncingFromTab) return;
     const idx = e.detail && e.detail.idx;
@@ -334,7 +334,7 @@
     if (!t) return;
     const projectsPage = document.querySelector('.page[data-page="projects"]');
     const onProjects = projectsPage && projectsPage.classList.contains('active');
-    if (!onProjects && window.__navigate) window.__navigate('projects');
+    if (!onProjects) return;
     syncingFromTerm = true;
     openTab(t.n);
     syncingFromTerm = false;
