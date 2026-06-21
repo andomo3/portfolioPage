@@ -96,7 +96,7 @@
     const current = document.querySelector('.page.active');
     const target = document.querySelector(`.page[data-page="${page}"]`);
     if (!target) return;
-    document.querySelectorAll('.sb-item, .mob-tab, [data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === page));
+    document.querySelectorAll('.nav-item, .nav-logo, .mob-tab, [data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === page));
     const screenLabel = document.getElementById('screen-label');
     if (screenLabel) screenLabel.textContent = target.dataset.screenLabel || '';
     history.replaceState({}, '', '#' + page);
@@ -128,9 +128,12 @@
     updateScrollProgress();
   }
 
-  document.querySelectorAll('.sb-item, .mob-tab, [data-nav]').forEach(a => {
+  document.querySelectorAll('.nav-item, .nav-logo, .mob-tab, [data-nav]').forEach(a => {
     a.addEventListener('click', () => { if (a.dataset.nav) navigate(a.dataset.nav); });
   });
+
+  // Nav logo click
+  document.querySelector('.nav-logo')?.addEventListener('click', () => navigate('home'));
 
   // Header back/forward
   document.querySelectorAll('[data-history]').forEach(btn => {
