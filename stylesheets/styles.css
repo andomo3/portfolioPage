@@ -871,9 +871,7 @@ button { font-family: inherit; }
   grid-template-columns: 96px 1fr;
   gap: 0 48px;
   padding: 36px 0;
-  border-top: 1px solid var(--hairline);
 }
-.exp-card:last-child { border-bottom: 1px solid var(--hairline); }
 .exp-card .when {
   text-align: right;
   font-family: var(--mono);

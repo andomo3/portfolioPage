@@ -131,7 +131,7 @@
       if (introIdx >= intro.length) {
         typing = false;
         inputRow.style.opacity = '1';
-        input.focus();
+        input.focus({ preventScroll: true });
         return;
       }
       const step = intro[introIdx++];
