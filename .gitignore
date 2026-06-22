@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 db.sqlite3
+CLAUDE.md
+.claude/

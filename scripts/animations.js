@@ -30,7 +30,7 @@
       const num = parseInt(raw.replace(/\D/g, ''), 10);
       if (isNaN(num)) return;
       const suffix = raw.replace(/[\d]/g, '');
-      const duration = 700;
+      const duration = 1200;
       const start = performance.now();
       function tick(now) {
         const p = Math.min((now - start) / duration, 1);
